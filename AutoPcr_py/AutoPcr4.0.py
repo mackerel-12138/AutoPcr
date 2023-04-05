@@ -944,7 +944,7 @@ def SendZb():
 
 
 def GetZBPath(name):
-    return os.path.join('img/\other/\zuanbei\\', str(name)+'.png')
+    return os.path.join('img\\other\\zhuangbei\\', str(name)+'.png')
 
 
 isRetryNeedZb = False
@@ -952,32 +952,41 @@ isRetryNeedZb = False
 
 def needSeedZbStart():
     global isRetryNeedZb
-    print('need Send ')
+    print('装备乞讨任务')
     if (isRetryNeedZb == False):
         ToHomePage()
         WaitToClickImg('img/other/hanghui.png')
-    time.sleep(1)
-    WaitToClickImg('img/other/needSend.png')
-    Click()
+    time.sleep(2)
+    # WaitToClickImg('img/other/needSend.png')
+    DoKeyDown(huodongKey)
+    time.sleep(2)
 
-    time.sleep(1)
-    DoKeyDown(groupKeys[0])
-    DoKeyDown(groupKeys[0])
-
-    if (IsHasImg('img/other/needSend.png', False) == False):
+    if (IsHasImg('img/other/needSend2.png', False) == True):
         needSeedZb()
     else:
-        print("确认上期")
-        WaitToClickImg('img/other/needSend.png')
+        print("确认上期乞讨")
+        WaitToClickImg('img/main/sure.png')
         time.sleep(1)
-        needSeedZb()
+        # WaitToClickImg('img/other/needSend.png')
+        DoKeyDown(huodongKey)
+        time.sleep(1)
+        if (IsHasImg('img/main/sure.png', False) == True):
+            print("上期乞讨尚未结束")
+            DoKeyDown(exitKey)
+            DoKeyDown(exitKey)
+            time.sleep(0.5)
+            ToHomePage()
+        else:
+            needSeedZb()
 
 
 def needSeedZb():
-    if (WaitToClickImg(GetZBPath(needZbName), False, maxTry=8, match=0.9) == False):
-        print("找不到装备->反转排序")
+    print("装备乞讨")
+    if (WaitToClickImg(GetZBPath(needZbName), False, maxTry=5, match=0.7) == False):
+        print("找不到装备，反转排序")
         DoKeyDown(partyKey)
-    if (WaitToClickImg(GetZBPath(needZbName), maxTry=8, match=0.9)):
+        time.sleep(1)
+    if (WaitToClickImg(GetZBPath(needZbName), maxTry=5, match=0.7)):
         WaitToClickImg('img/other/needSend2.png')
         WaitToClickImg('img/main/sure.png')
         WaitToClickImg('img/main/sure.png')
