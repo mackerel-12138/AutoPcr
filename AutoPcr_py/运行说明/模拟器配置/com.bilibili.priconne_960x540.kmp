@@ -659,6 +659,33 @@
                 },
                 "extraData": ""
             }
+        },
+        {
+            "class": "ClassKeyboardCurve",
+            "data": {
+                "key": 79,
+                "secondKey": 0,
+                "curve": [
+                    {
+                        "x": 3224,
+                        "y": 6455,
+                        "timing": 0
+                    },
+                    {
+                        "x": 3224,
+                        "y": 6455,
+                        "timing": 98
+                    }
+                ],
+                "extraData": "",
+                "description": "",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
         }
     ],
     "configInfo": {
@@ -671,7 +698,8 @@
             "width": 1600,
             "height": 900
         },
-        "priority": 0
+        "priority": 0,
+        "search": ""
     },
     "keyboardConfig": {
         "mouseCenter": {
@@ -688,6 +716,8 @@
             "y": 0
         },
         "cancelKey": 0,
-        "cursor": "lolCursor"
+        "cancelMode": 0,
+        "cursor": "lolCursor",
+        "extraData": ""
     }
 }
