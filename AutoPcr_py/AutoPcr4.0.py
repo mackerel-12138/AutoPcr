@@ -506,7 +506,7 @@ def StartJJC():
         WaitToClickImg('img/jjc/skip.png', maxTry=25)
     Click()
     time.sleep(2)
-    LongTimeCheck("img/dxc/win.png", "img/jjc/lose.png")
+    LongTimeCheck("img/dxc_ex3/win.png", "img/jjc/lose.png")
     time.sleep(1.5)
     DoKeyDown(nextKey)
     time.sleep(1.5)
@@ -776,12 +776,13 @@ def StartBoss():
 
 
 def WaitBossFight():
-    if (LongTimeCheck('img/dxc/win.png', dxcDir+'/lose.png')):
+    if (LongTimeCheck('img/dxc_ex3/win.png', dxcDir+'/lose.png')):
         # win
-        print('win')
+        print('战斗胜利')
         StopLoopKeyDown()
         time.sleep(2.5)
         DoKeyDown(nextKey)
+        time.sleep(3)
         DoKeyDown(nextKey)
         time.sleep(3)
         DoKeyDown(exitKey)
@@ -790,7 +791,7 @@ def WaitBossFight():
         time.sleep(0.5)
         DoKeyDown(exitKey)
         ToHomePage()
-        print('end')
+        print('回到主页')
     else:
         # lose
         StopLoopKeyDown()
@@ -864,20 +865,27 @@ def EnterDiaoCha():
 def SaoDang(_time=4):
     WaitToClickImg('img/tansuo/plus.png')
     for i in range(_time):
+        time.sleep(0.5)
         Click()
 
     WaitToClickImg('img/tansuo/start.png')
+    if (IsHasImg('img/main/huifu.png', False)):
+        DoKeyDown(exitKey)
+        time.sleep(0.5)
+        DoKeyDown(exitKey)
+        time.sleep(0.5)
+        return
     WaitToClickImg("img/main/sure.png")
-    time.sleep(0.2)
+    time.sleep(0.5)
     WaitToClickImg("img/main/skip.png")
-    time.sleep(0.3)
+    time.sleep(0.5)
     Click()
 
 
 def ExitSaoDang():
     time.sleep(0.5)
     DoKeyDown(exitKey)
-    time.sleep(0.3)
+    time.sleep(0.5)
     DoKeyDown(exitKey)
 
 
@@ -906,6 +914,7 @@ def xinSui():
         ExitSaoDang()
         WaitToClickImg('img/tansuo/xinSuiEnter.png')
 
+    time.sleep(0.5)
     WaitToClickImg('img/tansuo/xinSuiTop.png', False)
     DoKeyDown(listSelectKeys[0])
     SaoDang()
@@ -914,6 +923,7 @@ def xinSui():
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
 
+    time.sleep(0.5)
     WaitToClickImg('img/tansuo/xinSuiTop.png', False)
     DoKeyDown(listSelectKeys[1])
     SaoDang()
@@ -922,6 +932,7 @@ def xinSui():
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
 
+    time.sleep(0.5)
     WaitToClickImg('img/tansuo/xinSuiTop.png', False)
     DoKeyDown(listSelectKeys[2])
     SaoDang()
@@ -1161,10 +1172,28 @@ def OnHouDongHard():
     time.sleep(0.5)
     DoKeyDown(exitKey)
 
-    # ClickPlayer()
+    # 跳过剧情
+    while IsHasImg('img/huodong/baoxiang.png', False) == False and IsHasImg('img/huodong/jqhd1-5.png', False) == False:
+        print("跳过剧情")
+        DoKeyDown(exitKey)
+        time.sleep(0.5)
 
+    if IsHasImg('img/huodong/baoxiang.png', False) == False:
+        print("打开活动困难关卡")
+        DoKeyDown(groupKeys[3])
+        time.sleep(1)
+        DoKeyDown(partyKey)
+        time.sleep(1)
+
+    # ClickPlayer()
+    print('刷剧情活动1-5')
     WaitToClickImg('img/huodong/jqhd1-5.png')
+    time.sleep(1)
     for i in range(5):
+        if IsHasImg('img/main/tiaozhan.png', False) == False:
+            print('当前关卡已经打过了')
+            MoveToLeft()
+            continue
         if (WaitToClickImg('img/tansuo/start2.png', match=hightMatch, isRgb=True, maxTry=8, isClick=False)):
             MoveToLeft()
         SaoDang(2)
@@ -1184,8 +1213,20 @@ def OnHouDongHard():
         else:
             print("VH已经打过了")
         print("VH结束")
-
     ExitSaoDang()
+
+    # 领奖励
+    if (IsHasImg('img/task/task.png') == True):
+        print('领活动奖励')
+        time.sleep(2)
+        WaitToClickImg("img/huodong/meiri1.png")
+        WaitToClickImg("img/huodong/meiri2.png")
+        WaitToClickImg("img/task/takeAll.png")
+        DoKeyDown(exitKey)
+        WaitToClickImg("img/huodong/putong1.png")
+        WaitToClickImg("img/huodong/putong2.png")
+        WaitToClickImg("img/task/takeAll.png")
+        DoKeyDown(exitKey)
 
 
 def MoveToLeft():
@@ -1333,16 +1374,16 @@ def WaitStart():
         if (IsHasImg("img/main/home.png", stopTime=3)):
             print("find home")
 
-    time.sleep(0.5)
+    time.sleep(1)
     DoKeyDown(exitKey)
-    time.sleep(0.5)
+    time.sleep(1)
     DoKeyDown(exitKey)
     while (IsHasImg("img/main/fight.png", False) == False):
         DoKeyDown(exitKey)
         time.sleep(1)
         DoKeyDown(exitKey)
         time.sleep(1)
-    time.sleep(0.5)
+    time.sleep(1)
     ToHomePage()
 
 # 按下Esc 停止
