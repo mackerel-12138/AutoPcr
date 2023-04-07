@@ -442,7 +442,7 @@ def ToFightPage():
 
 
 def ToHomePage():
-    if (IsHasImg("img/main/home2.png") == False):
+    if IsHasImg("img/main/home2.png", False) == False and IsHasImg("img/main/ghHome.png", False) == False:
         print('回到主页')
         if (WaitToClickImg("img/main/home.png", True, True, 5) == False):
             DoKeyDown(exitKey)
@@ -914,29 +914,15 @@ def xinSui():
         ExitSaoDang()
         WaitToClickImg('img/tansuo/xinSuiEnter.png')
 
-    time.sleep(0.5)
-    WaitToClickImg('img/tansuo/xinSuiTop.png', False)
-    DoKeyDown(listSelectKeys[0])
-    SaoDang()
-    ExitSaoDang()
-
-    DoKeyDown(exitKey)
-    DoKeyDown(exitKey)
-
-    time.sleep(0.5)
-    WaitToClickImg('img/tansuo/xinSuiTop.png', False)
-    DoKeyDown(listSelectKeys[1])
-    SaoDang()
-    ExitSaoDang()
-
-    DoKeyDown(exitKey)
-    DoKeyDown(exitKey)
-
-    time.sleep(0.5)
-    WaitToClickImg('img/tansuo/xinSuiTop.png', False)
-    DoKeyDown(listSelectKeys[2])
-    SaoDang()
-    ExitSaoDang()
+    for i in range(2):
+        time.sleep(0.5)
+        WaitToClickImg('img/tansuo/xinSuiTop.png', False)
+        DoKeyDown(listSelectKeys[i])
+        SaoDang()
+        ExitSaoDang()
+        DoKeyDown(exitKey)
+        DoKeyDown(exitKey)
+    ToHomePage()
 
 
 def SendZb():
@@ -1173,12 +1159,12 @@ def OnHouDongHard():
     DoKeyDown(exitKey)
 
     # 跳过剧情
-    while IsHasImg('img/huodong/baoxiang.png', False) == False and IsHasImg('img/huodong/jqhd1-5.png', False) == False:
+    while not IsHasImg('img/huodong/baoxiang.png', False) and not IsHasImg('img/huodong/hard1.png', False) and not IsHasImg('img/huodong/hard2.png', False):
         print("跳过剧情")
         DoKeyDown(exitKey)
         time.sleep(0.5)
 
-    if IsHasImg('img/huodong/baoxiang.png', False) == False:
+    if IsHasImg('img/huodong/baoxiang.png', False):
         print("打开活动困难关卡")
         DoKeyDown(groupKeys[3])
         time.sleep(1)
@@ -1186,16 +1172,15 @@ def OnHouDongHard():
         time.sleep(1)
 
     # ClickPlayer()
+    # TODO 选关卡
     print('刷剧情活动1-5')
     WaitToClickImg('img/huodong/jqhd1-5.png')
     time.sleep(1)
     for i in range(5):
-        if IsHasImg('img/main/tiaozhan.png', False) == False:
+        if IsHasImg('img/tansuo/start2.png', False):
             print('当前关卡已经打过了')
             MoveToLeft()
             continue
-        if (WaitToClickImg('img/tansuo/start2.png', match=hightMatch, isRgb=True, maxTry=8, isClick=False)):
-            MoveToLeft()
         SaoDang(2)
         DoKeyDown(groupKeys[0])
         DoKeyDown(groupKeys[0])
@@ -1207,7 +1192,7 @@ def OnHouDongHard():
     if (isVHBoss):
         DoKeyDown(huoDongVHBossKey)
         time.sleep(0.5)
-        if (IsHasImg('img/main/tiaozhan.png', False) == True):
+        if IsHasImg('img/main/tiaozhan.png', False):
             print("VH战斗")
             StartNormalFight()
         else:
@@ -1216,16 +1201,16 @@ def OnHouDongHard():
     ExitSaoDang()
 
     # 领奖励
-    if (IsHasImg('img/task/task.png') == True):
+    if IsHasImg('img/task/task.png'):
         print('领活动奖励')
         time.sleep(2)
-        WaitToClickImg("img/huodong/meiri1.png")
-        WaitToClickImg("img/huodong/meiri2.png")
+        DoKeyDown(huoDongJiangLiKeys[0])
         WaitToClickImg("img/task/takeAll.png")
+        WaitToClickImg("img/task/close.png")
         DoKeyDown(exitKey)
-        WaitToClickImg("img/huodong/putong1.png")
-        WaitToClickImg("img/huodong/putong2.png")
+        DoKeyDown(huoDongJiangLiKeys[1])
         WaitToClickImg("img/task/takeAll.png")
+        WaitToClickImg("img/task/close.png")
         DoKeyDown(exitKey)
 
 
@@ -1374,15 +1359,11 @@ def WaitStart():
         if (IsHasImg("img/main/home.png", stopTime=3)):
             print("find home")
 
-    time.sleep(1)
     DoKeyDown(exitKey)
-    time.sleep(1)
     DoKeyDown(exitKey)
     while (IsHasImg("img/main/fight.png", False) == False):
         DoKeyDown(exitKey)
-        time.sleep(1)
         DoKeyDown(exitKey)
-        time.sleep(1)
     time.sleep(1)
     ToHomePage()
 
@@ -1409,6 +1390,7 @@ listSelectKeys = ['I', 'J', 'N']
 roleKeys = ['1', '2', '3', '4', '5']
 groupKeys = ['Q', 'W', 'E', 'R', 'T']
 duiKeys = ['U', 'H', 'B']
+huoDongJiangLiKeys = ['S', 'D']
 huoDongHBossKey = 'O'
 huoDongVHBossKey = 'J'
 
