@@ -525,13 +525,10 @@ def StopLoopKeyDown():
 
 # region 界面跳转
 def ToFightPage():
-    if (IsHasImg("img/main/fight2.png") == False):
-        if (WaitToClickImg("img/main/fight.png", True, True, 5, True) == False):
-            DoKeyDown(exitKey)
-            DoKeyDown(exitKey)
-            logging.info('re to Fight')
-            ToFightPage()
-    time.sleep(1)
+    ToHomePage()
+    WaitToClickImg("img/main/fight.png")
+    DoKeyDown(exitKey)
+    logging.info('进入冒险页面')
 
 
 def ToHomePage():
@@ -1023,19 +1020,14 @@ def Xqb():
         ExitSaoDang()
         WaitToClickImg('img/tansuo/xqbEnter.png')
 
-    WaitToClickImg('img/tansuo/xqbTop.png', False)
-    DoKeyDown(listSelectKeys[0])
-
-    SaoDang()
-    ExitSaoDang()
-
-    DoKeyDown(exitKey)
-    DoKeyDown(exitKey)
-    WaitToClickImg('img/tansuo/xqbTop.png', False)
-
-    DoKeyDown(listSelectKeys[1])
-    SaoDang()
-    ExitSaoDang()
+    for i in range(2):
+        time.sleep(0.5)
+        WaitToClickImg('img/tansuo/xqbTop.png', False)
+        DoKeyDown(listSelectKeys[i])
+        SaoDang()
+        ExitSaoDang()
+        DoKeyDown(exitKey)
+        DoKeyDown(exitKey)
 
 
 def xinSui():
