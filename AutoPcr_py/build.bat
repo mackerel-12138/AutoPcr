@@ -14,6 +14,7 @@ XCOPY  .\config.ini .\TMP\ /Y
 XCOPY  .\StartCmd.cmd .\TMP\ /Y
 XCOPY  .\StartLeiDian.cmd .\TMP\ /Y
 XCOPY  .\StartLeiDian1.cmd .\TMP\ /Y
+XCOPY  .\运行说明\模拟器配置\com.bilibili.priconne_960x540.kmp .\TMP\ /Y
 XCOPY  .\img .\TMP\img\ /q /e /r /S /Y
 
 echo. 打包cmd
@@ -34,7 +35,7 @@ del .\AutoPcr4.0.py
 del .\AutoPcr4.0_GUI.py
 
 cd ..
-python -m zipfile -c AutoPcr.zip .\TMP\AutoPcr.exe .\TMP\AutoPcrCmd.exe .\TMP\CloseLeiDian.cmd .\TMP\config.ini .\TMP\StartCmd.cmd .\TMP\StartLeiDian.cmd .\TMP\StartLeiDian1.cmd .\TMP\img\
+python -m zipfile -c AutoPcr.zip .\TMP\AutoPcr.exe .\TMP\AutoPcrCmd.exe .\TMP\CloseLeiDian.cmd .\TMP\config.ini .\TMP\StartCmd.cmd .\TMP\StartLeiDian.cmd .\TMP\StartLeiDian1.cmd .\TMP\com.bilibili.priconne_960x540.kmp .\TMP\img\
 
 echo. 删除临时文件夹
 rd /s /q .\TMP
