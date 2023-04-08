@@ -1,6 +1,8 @@
 ## 公主连结自动化任务 
 
-git: https://github.com/smartgrass/AutoPcr
+git: https://github.com/mackerel-12138/AutoPcr
+
+fork自 https://github.com/smartgrass/AutoPcr
 
 b站: https://www.bilibili.com/video/BV1xT4y1U75y
 
@@ -35,17 +37,17 @@ config.ini是配置文件, 如果想保留配置, 可以在更新代码后, 把�
 
 步骤: 
 
-1. 安装py, ```\AutoPcr_py\运行说明\python安装包\python-3.11.0-amd64.exe```
+1. ~~安装py, ```\AutoPcr_py\运行说明\python安装包\python-3.11.0-amd64.exe```~~
 
-2. 安装py第三方库: 运行 SetupPip.cmd (管理员
+2. ~~安装py第三方库: 运行 SetupPip.cmd (管理员~~
 
 3. ~~设置管理员权限 : (把python.exe的启动改为管理员模式)~~
 
 4. 安装雷电模拟器(雷电9), 将```AutoPcr_py\运行说明\模拟器配置\com.bilibili.priconne_960x540.kmp```放入按键配置文件夹并启用, 更改雷电模拟器分辨率为```960*540 dpi160```
 
-5. 右键```AutoPcr4.0_GUI.py```-打开方式-选择python(深灰色)-点击始终
+5. ~~右键```AutoPcr4.0_GUI.py```-打开方式-选择python(深灰色)-点击始终~~ 解压, 运行```AutoPcr.exe```
 
-6. 界面上选择雷电模拟器路径, 点击启动模拟器并运行
+6. 界面上选择雷电模拟器路径, 选择模拟器序号, 点击启动模拟器并运行
 
 # 提示:
 
