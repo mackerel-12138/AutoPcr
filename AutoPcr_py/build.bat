@@ -34,7 +34,7 @@ del .\AutoPcr4.0.py
 del .\AutoPcr4.0_GUI.py
 
 cd ..
-python -m zipfile -c AutoPcr.zip .\TMP\
+python -m zipfile -c AutoPcr.zip .\TMP\AutoPcr.exe .\TMP\AutoPcrCmd.exe .\TMP\CloseLeiDian.cmd .\TMP\config.ini .\TMP\StartCmd.cmd .\TMP\StartLeiDian.cmd .\TMP\StartLeiDian1.cmd .\TMP\img\
 
 echo. É¾³ýÁÙÊ±ÎÄ¼þ¼Ð
 rd /s /q .\TMP
