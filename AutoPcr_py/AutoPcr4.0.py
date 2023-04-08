@@ -21,8 +21,12 @@ import win32ui
 import win32con
 import win32api
 import win32print
+import logging
+
+lft = "[%(asctime)s] %(levelname)s %(lineno)d %(message)s"
+logging.basicConfig(level=logging.INFO, format=lft)
 # region 获取当前路径
-print("path ", os.path.dirname(sys.executable))
+logging.info("path " + os.path.dirname(sys.executable))
 
 curDir = os.path.dirname(__file__)
 # 图片路径拼接
@@ -35,7 +39,7 @@ def GetFullPath(pngName):
 
 # 利用文件是否存在判断是Exe 还是 Py文件
 if (os.path.exists(GetFullPath('config.ini')) == False):
-    print('Exe Run')
+    logging.info('Exe Run')
     curDir = os.getcwd()
 
 # endregion
@@ -68,8 +72,7 @@ try:
 except:
     mnqIndex = '0'
     moniqTime = 20
-MainSettingKey = 'MainSetting_'+str(mnqIndex)
-
+MainSettingKey = 'MainSetting_' + str(mnqIndex)
 
 # region win32初始化
 # 获取后台窗口的句柄，注意后台窗口不能最小化
@@ -84,7 +87,6 @@ Scale = 1
 saveDC = None
 mfcDC = None
 saveBitMap = None
-
 
 # 获取真正的大小
 rect = None
@@ -101,7 +103,7 @@ def winfun(hwnd, lparam):
     subtitle = win32gui.GetWindowText(hwnd)
     if subtitle == 'TheRender':
         Subhwnd = hwnd
-        print("Find Subhwnd", Subhwnd)
+        logging.info("Find Subhwnd " + str(Subhwnd))
 
 
 def get_real_resolution():
@@ -137,22 +139,22 @@ def WaitWin32Start():
         window_title = "雷电模拟器-1"
 
     if (isFor64):
-        window_title = window_title+"(64)"
-    print("当前请求模拟器名称: " + window_title + " (如启动失败则检查多开器中的模拟器名称 和 序号)")
+        window_title = window_title + "(64)"
+    logging.info("当前请求模拟器名称: " + window_title + " (如启动失败则检查多开器中的模拟器名称 和 序号)")
 
     MainhWnd = win32gui.FindWindow('LDPlayerMainFrame', window_title)
 
     while (MainhWnd == 0):
-        print("等待模拟器启动中...")
+        logging.info("等待模拟器启动中...")
         time.sleep(1.5)
         MainhWnd = win32gui.FindWindow('LDPlayerMainFrame', window_title)
 
     # 已打开雷电
-    print("Find MainhWnd", MainhWnd)
+    logging.info("Find MainhWnd " + str(MainhWnd))
     win32gui.EnumChildWindows(MainhWnd, winfun, None)
     while (Subhwnd == None):
         time.sleep(1.5)
-        print("wait subHwnd...")
+        logging.info("wait subHwnd...")
         win32gui.EnumChildWindows(MainhWnd, winfun, None)
 
     # 获取窗口大小
@@ -161,10 +163,10 @@ def WaitWin32Start():
     trueW = rect[2]
     Scale = get_scaling()
 
-    print("TrueH ", trueH, "TrueW", trueW, "Scale", Scale)
+    logging.info("TrueH " + str(trueH) + " TrueW " + str(trueW) + " Scale " + str(Scale))
     SaveW = int(trueW * Scale)
     SaveH = int(trueH * Scale)
-    print("SaveH ", SaveH, "SaveW", SaveW)
+    logging.info("SaveH " + str(SaveH) + " SaveW " + str(SaveW))
 
     hWndDC = win32gui.GetWindowDC(Subhwnd)
     # 创建设备描述表
@@ -190,8 +192,7 @@ def SavaShoot():
     bmpstr = saveBitMap.GetBitmapBits(True)
 
     # im_PIL = Image.frombuffer('RGB',(bmpinfo['bmWidth'],bmpinfo['bmHeight']),bmpstr,'raw','BGRX',0,1)
-    im_PIL = Image.frombuffer('RGB', (SaveW, SaveH),
-                              bmpstr, 'raw', 'BGRX', 0, 1)
+    im_PIL = Image.frombuffer('RGB', (SaveW, SaveH), bmpstr, 'raw', 'BGRX', 0, 1)
 
     newImg = im_PIL.resize((width, height), Image.Resampling.LANCZOS)
 
@@ -202,25 +203,121 @@ def SavaShoot():
 
 
 key_map = {
-    "0": 48, "1": 49, "2": 50, "3": 51, "4": 52, "5": 53, "6": 54, "7": 55, "8": 56, "9": 57,
-    'F1': 112, 'F2': 113, 'F3': 114, 'F4': 115, 'F5': 116, 'F6': 117, 'F7': 118, 'F8': 119,
-    'F9': 120, 'F10': 121, 'F11': 122, 'F12': 123, 'F13': 124, 'F14': 125, 'F15': 126, 'F16': 127,
-    "A": 65, "B": 66, "C": 67, "D": 68, "E": 69, "F": 70, "G": 71, "H": 72, "I": 73, "J": 74,
-    "K": 75, "L": 76, "M": 77, "N": 78, "O": 79, "P": 80, "Q": 81, "R": 82, "S": 83, "T": 84,
-    "U": 85, "V": 86, "W": 87, "X": 88, "Y": 89, "Z": 90,
-    'BACKSPACE': 8, 'TAB': 9, 'TABLE': 9, 'CLEAR': 12,
-    'ENTER': 13, 'SHIFT': 16, 'CTRL': 17,
-    'CONTROL': 17, 'ALT': 18, 'ALTER': 18, 'PAUSE': 19, 'BREAK': 19, 'CAPSLK': 20, 'CAPSLOCK': 20, 'ESC': 27,
-    'SPACE': 32, 'SPACEBAR': 32, 'PGUP': 33, 'PAGEUP': 33, 'PGDN': 34, 'PAGEDOWN': 34, 'END': 35, 'HOME': 36,
-    'LEFT': 37, 'UP': 38, 'RIGHT': 39, 'DOWN': 40, 'SELECT': 41, 'PRTSC': 42, 'PRINTSCREEN': 42, 'SYSRQ': 42,
-    'SYSTEMREQUEST': 42, 'EXECUTE': 43, 'SNAPSHOT': 44, 'INSERT': 45, 'DELETE': 46, 'HELP': 47, 'WIN': 91,
-    'WINDOWS': 91, 'NMLK': 144,
-    'NUMLK': 144, 'NUMLOCK': 144, 'SCRLK': 145,
-    '[': 219, ']': 221, '+': 107, '-': 109}
+    "0": 48,
+    "1": 49,
+    "2": 50,
+    "3": 51,
+    "4": 52,
+    "5": 53,
+    "6": 54,
+    "7": 55,
+    "8": 56,
+    "9": 57,
+    'F1': 112,
+    'F2': 113,
+    'F3': 114,
+    'F4': 115,
+    'F5': 116,
+    'F6': 117,
+    'F7': 118,
+    'F8': 119,
+    'F9': 120,
+    'F10': 121,
+    'F11': 122,
+    'F12': 123,
+    'F13': 124,
+    'F14': 125,
+    'F15': 126,
+    'F16': 127,
+    "A": 65,
+    "B": 66,
+    "C": 67,
+    "D": 68,
+    "E": 69,
+    "F": 70,
+    "G": 71,
+    "H": 72,
+    "I": 73,
+    "J": 74,
+    "K": 75,
+    "L": 76,
+    "M": 77,
+    "N": 78,
+    "O": 79,
+    "P": 80,
+    "Q": 81,
+    "R": 82,
+    "S": 83,
+    "T": 84,
+    "U": 85,
+    "V": 86,
+    "W": 87,
+    "X": 88,
+    "Y": 89,
+    "Z": 90,
+    'BACKSPACE': 8,
+    'TAB': 9,
+    'TABLE': 9,
+    'CLEAR': 12,
+    'ENTER': 13,
+    'SHIFT': 16,
+    'CTRL': 17,
+    'CONTROL': 17,
+    'ALT': 18,
+    'ALTER': 18,
+    'PAUSE': 19,
+    'BREAK': 19,
+    'CAPSLK': 20,
+    'CAPSLOCK': 20,
+    'ESC': 27,
+    'SPACE': 32,
+    'SPACEBAR': 32,
+    'PGUP': 33,
+    'PAGEUP': 33,
+    'PGDN': 34,
+    'PAGEDOWN': 34,
+    'END': 35,
+    'HOME': 36,
+    'LEFT': 37,
+    'UP': 38,
+    'RIGHT': 39,
+    'DOWN': 40,
+    'SELECT': 41,
+    'PRTSC': 42,
+    'PRINTSCREEN': 42,
+    'SYSRQ': 42,
+    'SYSTEMREQUEST': 42,
+    'EXECUTE': 43,
+    'SNAPSHOT': 44,
+    'INSERT': 45,
+    'DELETE': 46,
+    'HELP': 47,
+    'WIN': 91,
+    'WINDOWS': 91,
+    'NMLK': 144,
+    'NUMLK': 144,
+    'NUMLOCK': 144,
+    'SCRLK': 145,
+    '[': 219,
+    ']': 221,
+    '+': 107,
+    '-': 109
+}
+
+zbmap = {
+    '新月的悲叹': 'xinyue',
+    '焰帝戒指': 'huojie',
+    '忘哭之冠': 'wangkuzhiguan',
+    '深渊之弓': 'shenyuanzhiging',
+    '愤怒法杖': 'fennufazhang',
+    '鹰神之煌剑': 'yingshenjian',
+    '狮鹫羽饰': 'shijiuyushi',
+    '恶魔法杖': 'emofazhang',
+}
 
 
 def GetWinPos():
-    print("")
+    logging.info("")
 
 
 def Click(x=None, y=None):
@@ -233,41 +330,38 @@ def Click(x=None, y=None):
             lastX = x
             lastY = y
 
-        tx = int(x * trueW/960)
-        ty = int(y * trueH/540)
-        # print(trueH,trueW,"simPos:",x,y,"truePos:",tx,ty)
+        tx = int(x * trueW / 960)
+        ty = int(y * trueH / 540)
+        # logging.info(trueH,trueW,"simPos:",x,y,"truePos:",tx,ty)
         positon = win32api.MAKELONG(int(tx), int(ty))
-        win32api.SendMessage(Subhwnd, win32con.WM_LBUTTONDOWN,
-                             win32con.MK_LBUTTON, positon)
+        win32api.SendMessage(Subhwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, positon)
         time.sleep(0.02)
-        win32api.SendMessage(Subhwnd, win32con.WM_LBUTTONUP,
-                             win32con.MK_LBUTTON, positon)
+        win32api.SendMessage(Subhwnd, win32con.WM_LBUTTONUP, win32con.MK_LBUTTON, positon)
         time.sleep(0.1)
     except Exception as e:
-        print(f"fallback adb click:{e}")
+        logging.info(f"fallback adb click:{e}")
 
 
 def testKey():
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYDOWN, 90, 0)
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, 90, 0)
 
+
 # 抬起按键
-
-
 def release_key(key_code):
-    win32api.keybd_event(key_code, win32api.MapVirtualKey(
-        key_code, 0), win32con.KEYEVENTF_KEYUP, 0)
+    win32api.keybd_event(key_code, win32api.MapVirtualKey(key_code, 0), win32con.KEYEVENTF_KEYUP, 0)
+
+
 # 按下按键
-
-
 def press_key(key_code):
     win32api.keybd_event(key_code, win32api.MapVirtualKey(key_code, 0), 0, 0)
+
+
 #  按一下按键
-
-
 def press_and_release_key(key_code):
     press_key(key_code)
     release_key(key_code)
+
 
 # endregion
 
@@ -277,56 +371,55 @@ def press_and_release_key(key_code):
 def IsHasImg(targetImg, isClick=True, stopTime=4, offsetY=0, isRgb=False, match=minMatch):
     return WaitToClickImg(targetImg, isClick, True, stopTime, offsetY=offsetY, isRgb=isRgb, match=match)
 
+
 # 等待图片出现,低频率检测
-
-
 def WaitImgLongTime(targetImg):
-    maxTryTime = 30*4  # 4分钟 最大等待上限
+    maxTryTime = 30 * 4  # 4分钟 最大等待上限
     longTimer = 0
     while (WaitToClickImg(targetImg, False, True) == False):
         time.sleep(2)
-        longTimer = longTimer+1
+        longTimer = longTimer + 1
         if (longTimer > maxTryTime):
             return
+
+
 # 查找图片
-
-
 def WaitToClickImg(targetImg, isClick=True, isSkip=True, maxTry=12, autoExit=False, match=minMatch, isRgb=False, offsetY=0):
     # isClick:找到图片后是否点击
     # isSkip:查找失败后是否跳过
     # maxTry:查找失败重新尝试次数
     target_ImgPath = GetFullPath(targetImg)
     Screen_ImgPath = SavaShoot()
-    print(target_ImgPath)
+    logging.debug(target_ImgPath)
     imsrc = ac.imread(Screen_ImgPath)  # 原始图像
     imsch = ac.imread(target_ImgPath)  # 带查找的部分
     match_result = ac.find_template(imsrc, imsch, match, rgb=isRgb)
 
-    print('match : %s %s' % (targetImg, match_result))
+    logging.debug('match : %s %s' % (targetImg, match_result))
     global waitTime
 
     if match_result != None:
-        # print(match,minMatch,targetImg)
+        # logging.info(match,minMatch,targetImg)
         # if(match > minMatch):
         # 	for	ma in match_result:
-        # 		print('confidence ',ma)
-        # 	print("Find Highist " ,len(match_result))
+        # 		logging.info('confidence ',ma)
+        # 	logging.info("Find Highist " ,len(match_result))
 
         x1, y1 = match_result['result']
         if (match_result['confidence'] < warnMatch):
-            print("\033[1;33m %s %s \033[0m" %
-                  (targetImg, match_result['confidence']))
+            logging.debug("\033[1;33m %s %s \033[0m" % (targetImg, match_result['confidence']))
         waitTime = 0
 
         if (isClick):
-            y1 = y1+(offsetY*trueH/540)
+            y1 = y1 + (offsetY * trueH / 540)
             time.sleep(0.1)
+            logging.info("Click >> " + targetImg)
             Click(x1, y1)
-            time.sleep(0.6)
+            time.sleep(1)
         return True
     else:
-        waitTime = waitTime+1
-        print((isSkip == False))
+        waitTime = waitTime + 1
+        logging.debug(isSkip == False)
         if ((isSkip == False) | (waitTime < maxTry)):
             time.sleep(0.18)
             if (isSkip == False):
@@ -335,12 +428,11 @@ def WaitToClickImg(targetImg, isClick=True, isSkip=True, maxTry=12, autoExit=Fal
                 DoKeyDown(exitKey)
             return WaitToClickImg(targetImg, isClick, isSkip, maxTry, autoExit, match, isRgb)
         else:
-            print("Skip >> ", targetImg)
+            logging.info("Skip >> " + targetImg)
             return False
 
+
 # 屏幕截图,并返回保存路径
-
-
 def image_X():
     global curDir
     img = ImageGrab.grab()
@@ -348,9 +440,8 @@ def image_X():
     img.save(sp)
     return sp
 
+
 # 点到消失为止
-
-
 def ClickUntilNul(path, offsetY=0, maxTry=20, isRgb=False, match=minMatch):
     WaitToClickImg(path, offsetY=offsetY, isRgb=isRgb, match=match)
     time.sleep(0.5)
@@ -358,8 +449,9 @@ def ClickUntilNul(path, offsetY=0, maxTry=20, isRgb=False, match=minMatch):
     while (IsHasImg(path, offsetY=offsetY, isRgb=isRgb, match=match)):
         if (tryTime > maxTry):
             break
-        tryTime = tryTime+1
+        tryTime = tryTime + 1
         IsHasImg(path, offsetY=offsetY, isRgb=isRgb, match=match)
+
 
 # #点击然后exit消失为止
 # def ClickUntilNul2(path,exsitPath):
@@ -379,7 +471,7 @@ def pressKey(key):
 
 def DoKeyDown(key):
     pressKey(key)
-    time.sleep(0.6)
+    time.sleep(1)
 
 
 def LongTimeCheck(im1, im2):
@@ -388,16 +480,16 @@ def LongTimeCheck(im1, im2):
     while (isWaiting):
         time.sleep(2)
         if (IsHasImg(im1, False)):
-            print('has ', im1)
+            logging.info('has ' + im1)
             return True
         if (IsHasImg(im2, False)):
-            print('has ', im2)
+            logging.info('has ' + im2)
             return False
 
 
 # 快按钮事件
 def FastKeyDown(_key):
-    print(_key)
+    logging.info(_key)
     time.sleep(0.03)
     pressKey(_key)
 
@@ -414,7 +506,7 @@ def LoopKeyDown():
 
 
 def StartLoopKeyDown(key):
-    print("start loop ", key)
+    logging.info("start loop " + key)
     global loopKey
     loopKey = key
     global t1
@@ -425,10 +517,11 @@ def StartLoopKeyDown(key):
 def StopLoopKeyDown():
     global loopKey
     loopKey = 'exit'
-    print('StopLoopKeyDown')
+    logging.info('StopLoopKeyDown')
 
 
 # endregion
+
 
 # region 界面跳转
 def ToFightPage():
@@ -436,20 +529,25 @@ def ToFightPage():
         if (WaitToClickImg("img/main/fight.png", True, True, 5, True) == False):
             DoKeyDown(exitKey)
             DoKeyDown(exitKey)
-            print('re to Fight')
+            logging.info('re to Fight')
             ToFightPage()
     time.sleep(1)
 
 
 def ToHomePage():
-    if IsHasImg("img/main/home2.png", False) == False and IsHasImg("img/main/ghHome.png", False) == False:
-        print('回到主页')
-        if (WaitToClickImg("img/main/home.png", True, True, 5) == False):
-            DoKeyDown(exitKey)
-            DoKeyDown(exitKey)
-            print('重新回到主页')
-            ToHomePage()
-    print('已回到主页')
+    while not IsHasImg("img/main/tuichu.png", False):
+        logging.info('回到主页')
+        DoKeyDown(endKey)
+    DoKeyDown(exitKey)
+
+    # if not IsHasImg("img/main/home2.png", False) and not IsHasImg("img/main/ghHome.png", False):
+    #     logging.info('回到主页')
+    #     if (WaitToClickImg("img/main/home.png", True, True, 5) == False):
+    #         DoKeyDown(exitKey)
+    #         DoKeyDown(exitKey)
+    #         logging.warning('重新回到主页')
+    #         ToHomePage()
+    logging.info('已回到主页')
     time.sleep(1)
 
 
@@ -460,26 +558,27 @@ def ToHangHuiPage():
     if (IsHasImg("img/other/members.png") == False):
         DoKeyDown(exitKey)
         DoKeyDown(exitKey)
-        print('重新进入行会')
+        logging.info('重新进入行会')
         ToHangHuiPage()
-    print('已进入行会')
+    logging.info('已进入行会')
     time.sleep(1)
 
 
 def ToShopPage():
     WaitToClickImg("img/shop/shop1.png", True, True, 5)
     time.sleep(1)
+
+
 # endregion
 
+
 # 选择队伍
-
-
 def SelectParty(x, y):
     time.sleep(1)
     DoKeyDown(partyKey)
     time.sleep(0.4)
-    x = x-1
-    y = y-1
+    x = x - 1
+    y = y - 1
     DoKeyDown(groupKeys[x])
     time.sleep(0.1)
     DoKeyDown(duiKeys[y])
@@ -487,7 +586,7 @@ def SelectParty(x, y):
 
 
 def StartJJC():
-    print("===竞技场==")
+    logging.info("开始竞技场任务")
     ToFightPage()
     WaitToClickImg("img/jjc/jjc.png")
     # WaitToClickImg("img/jjc/get.png")
@@ -496,12 +595,20 @@ def StartJJC():
     WaitToClickImg("img/jjc/jjcTop.png", False)
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
+    logging.info("领工资")
+    DoKeyDown(huoDongHBossKey)
+    DoKeyDown(exitKey)
+    logging.info("战斗开始")
     DoKeyDown(listSelectKeys[0])
     time.sleep(1)
+    if IsHasImg("img/jjc/lengque.png", False):
+        logging.info("jjc冷却中。。。")
+        ToHomePage()
+        return
     DoKeyDown(playerKey)
     DoKeyDown(playerKey)
     time.sleep(7)
-    print("sleep...")
+    logging.info("sleep...")
     if (WaitToClickImg('img/jjc/skip.png', maxTry=25) == False):
         WaitToClickImg('img/jjc/skip.png', maxTry=25)
     Click()
@@ -511,9 +618,11 @@ def StartJJC():
     DoKeyDown(nextKey)
     time.sleep(1.5)
     DoKeyDown(nextKey)
+    ToHomePage()
 
 
 def StartPJJC():
+    logging.info("开始公主竞技场任务")
     ToFightPage()
     WaitToClickImg("img/jjc/pjjc.png")
     # WaitToClickImg("img/jjc/get.png")
@@ -521,16 +630,22 @@ def StartPJJC():
     DoKeyDown(exitKey)
     WaitToClickImg("img/jjc/pjjcTop.png", False)
     DoKeyDown(exitKey)  # 关掉提示框
+    logging.info("领工资")
+    DoKeyDown(huoDongHBossKey)
+    DoKeyDown(exitKey)
+    time.sleep(1)
+    logging.info("战斗开始")
     DoKeyDown(listSelectKeys[0])  # 选择
     time.sleep(1.5)
+    if IsHasImg("img/jjc/lengque.png", False):
+        logging.info("pjjc冷却中。。。")
+        ToHomePage()
+        return
     DoKeyDown(playerKey)
-    time.sleep(0.3)
     DoKeyDown(playerKey)
-    time.sleep(0.3)
     DoKeyDown(playerKey)
-    time.sleep(0.3)
     DoKeyDown(playerKey)
-    print("sleep for 5s...")
+    logging.info("sleep for 5s...")
     time.sleep(6)
     if (WaitToClickImg('img/jjc/skip.png', maxTry=20) == False):
         WaitToClickImg('img/jjc/skip.png', maxTry=20)
@@ -541,10 +656,12 @@ def StartPJJC():
     time.sleep(2.5)
     DoKeyDown(nextKey)
     time.sleep(2)
+    DoKeyDown(nextKey)
+    ToHomePage()
 
 
 def StartTanSuo():
-    print("===探索===")
+    logging.info("===探索===")
     ToFightPage()
     time.sleep(0.5)
     WaitToClickImg("img/tansuo/tansuo.png")
@@ -560,7 +677,7 @@ def StartTanSuo():
     WaitToClickImg("img/tansuo/return.png")
     time.sleep(0.5)
     DoKeyDown(exitKey)
-    print("===exit===")
+    logging.info("===exit===")
     DoKeyDown(exitKey)
     # exp
     if (IsHasImg("img/tansuo/topExp.png", False) == False):
@@ -607,27 +724,27 @@ lastGroup = ""
 
 
 def StartDxc(index=1):
-    print("===地下城==")
+    logging.info("===地下城==")
     global nextDxcLevel
     nextDxcLevel = index
     ToFightPage()
     # 进入地下城
     EnterDxc()
     if (IsHasImg(dxcDir + "/ex.png", False)):
-        print('今天打完了')
+        logging.info('今天打完了')
         ToHomePage()
         return
     if (isKillBoss == False):
         time.sleep(1)
-        if (WaitToClickImg(dxcDir+"/box5.png", False, True, 4)):
+        if (WaitToClickImg(dxcDir + "/box5.png", False, True, 4)):
             WaitToClickImg(dxcDir + "/run.png")
             WaitToClickImg("img/main/sure.png")
             StartDxc()
             return
     if (nextDxcLevel <= 1):
-        print('wait box1...')
+        logging.info('wait box1...')
         WaitToClickImg(dxcDir + "/box1.png", False)
-        print('found box1 => start')
+        logging.info('found box1 => start')
     if (nextDxcLevel <= 0):
         nextDxcLevel = 1
 
@@ -652,13 +769,11 @@ def StartDxc(index=1):
 
 def CheckAuto():
     if (WaitToClickImg('img/main/auto2.png', True, match=0.93, isRgb=True, maxTry=40)):
-        print('检测到自动未开启, 开启自动')
-        WaitToClickImg('img/main/auto2.png', True,
-                       match=0.93, isRgb=True, maxTry=6)
+        logging.info('检测到自动未开启, 开启自动')
+        WaitToClickImg('img/main/auto2.png', True, match=0.93, isRgb=True, maxTry=6)
+
 
 # 进入地下城界面
-
-
 def EnterDxc():
     WaitToClickImg("img/main/dxc.png")
     time.sleep(1.5)
@@ -690,9 +805,9 @@ def GetGroupInfo(level, isBoss):
     if (rawValue == ""):
         return "5-1"
     if (listLen >= level):
-        return values[level-1]
+        return values[level - 1]
     else:
-        return values[listLen-1]
+        return values[listLen - 1]
 
 
 def CheckSelectGroup(level, isBoss):
@@ -709,7 +824,7 @@ def CheckSelectGroup(level, isBoss):
 
 def DxcBoxFight(level):
     global nextDxcLevel
-    nextDxcLevel = level+1
+    nextDxcLevel = level + 1
     # 自动取消关闭奖励界面
     if (level == 1):
         ClickUntilNul(dxcDir + "/box1.png")
@@ -749,17 +864,17 @@ def StartBoss():
     values = dxcGroupBoss.split(",")
     listLen = len(values)
     if (StartBossIndex >= listLen):  # 0开始计数
-        print("===Boss 挑战 失败==='")
+        logging.info("===Boss 挑战 失败==='")
         return
 
-    print('===StartBoss===')
+    logging.info('===StartBoss===')
     ClickUntilNul(dxcDir + "/box5.png")
     time.sleep(1)
     DoKeyDown(playerKey)
 
     time.sleep(0.4)
 
-    CheckSelectGroup(StartBossIndex+1, True)
+    CheckSelectGroup(StartBossIndex + 1, True)
     time.sleep(0.4)
 
     DoKeyDown(playerKey)
@@ -767,18 +882,18 @@ def StartBoss():
     DoKeyDown(playerKey)
 
     roleLoop = GetBossLoopKey(StartBossIndex)
-    print('roleLoop ', roleLoop)
+    logging.info('roleLoop ', roleLoop)
     if (roleLoop != '0'):
         StartLoopKeyDown(roleLoop)
 
-    StartBossIndex = StartBossIndex+1
+    StartBossIndex = StartBossIndex + 1
     WaitBossFight()
 
 
 def WaitBossFight():
-    if (LongTimeCheck('img/dxc_ex3/win.png', dxcDir+'/lose.png')):
+    if LongTimeCheck('img/dxc_ex3/win.png', dxcDir + '/lose.png'):
         # win
-        print('战斗胜利')
+        logging.info('战斗胜利')
         StopLoopKeyDown()
         time.sleep(2.5)
         DoKeyDown(nextKey)
@@ -791,7 +906,7 @@ def WaitBossFight():
         time.sleep(0.5)
         DoKeyDown(exitKey)
         ToHomePage()
-        print('回到主页')
+        logging.info('回到主页')
     else:
         # lose
         StopLoopKeyDown()
@@ -802,9 +917,29 @@ def WaitBossFight():
         StartBoss()
 
 
+# 等待必胜战斗
+def WaitAlwaysWinBossFight():
+    LongTimeCheck('img/main/next.png', dxcDir + '/lose.png')
+    # win
+    logging.info('战斗胜利')
+    StopLoopKeyDown()
+    time.sleep(2.5)
+    DoKeyDown(nextKey)
+    time.sleep(3)
+    DoKeyDown(nextKey)
+    time.sleep(3)
+    DoKeyDown(exitKey)
+    time.sleep(0.5)
+    DoKeyDown(exitKey)
+    time.sleep(0.5)
+    DoKeyDown(exitKey)
+    ToHomePage()
+    logging.info('回到主页')
+
+
 def StartNormalFight():
-    # 开启自动 倍速
-    print('战斗开始')
+    # TODO 开启自动 倍速
+    logging.info('战斗开始')
     WaitToClickImg('img/main/tiaozhan.png')
     time.sleep(1)
     WaitToClickImg('img/main/zhandoukaishi.png')
@@ -812,8 +947,6 @@ def StartNormalFight():
 
 
 # endregion
-
-
 def BuyExp():
     time.sleep(1)
     ToHomePage()
@@ -827,7 +960,7 @@ def BuyExp():
     for i in range(buyTime):
         if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
             # ToHomePage()
-            print('no to buy->update')
+            logging.info('no to buy->update')
             WaitToClickImg('img/shop/update.png')
             WaitToClickImg('img/main/sure.png')
         if (i > 0):
@@ -835,8 +968,8 @@ def BuyExp():
             WaitToClickImg('img/main/sure.png')
         expCounter = 1
         while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
-            expCounter = expCounter+1
-            print('IsHasImg', expCounter)
+            expCounter = expCounter + 1
+            logging.info('IsHasImg', expCounter)
         WaitToClickImg('img/shop/buyBtn.png')
         WaitToClickImg('img/shop/buyTitle.png', False)
         WaitToClickImg('img/main/sure.png')
@@ -849,6 +982,8 @@ def BuyExp():
 def NiuDan():
     WaitToClickImg('img/main/niuDan.png')
     time.sleep(2)
+    DoKeyDown(exitKey)
+    DoKeyDown(exitKey)
     DoKeyDown(partyKey)
     DoKeyDown(partyKey)
 
@@ -871,21 +1006,15 @@ def SaoDang(_time=4):
     WaitToClickImg('img/tansuo/start.png')
     if (IsHasImg('img/main/huifu.png', False)):
         DoKeyDown(exitKey)
-        time.sleep(0.5)
         DoKeyDown(exitKey)
-        time.sleep(0.5)
         return
     WaitToClickImg("img/main/sure.png")
-    time.sleep(0.5)
     WaitToClickImg("img/main/skip.png")
-    time.sleep(0.5)
-    Click()
+    DoKeyDown(exitKey)
 
 
 def ExitSaoDang():
-    time.sleep(0.5)
     DoKeyDown(exitKey)
-    time.sleep(0.5)
     DoKeyDown(exitKey)
 
 
@@ -914,7 +1043,7 @@ def xinSui():
         ExitSaoDang()
         WaitToClickImg('img/tansuo/xinSuiEnter.png')
 
-    for i in range(2):
+    for i in range(3):
         time.sleep(0.5)
         WaitToClickImg('img/tansuo/xinSuiTop.png', False)
         DoKeyDown(listSelectKeys[i])
@@ -941,7 +1070,7 @@ def SendZb():
 
 
 def GetZBPath(name):
-    return os.path.join('img\\other\\zhuangbei\\', str(name)+'.png')
+    return os.path.join('img\\other\\zhuangbei\\', str(name) + '.png')
 
 
 isRetryNeedZb = False
@@ -949,7 +1078,7 @@ isRetryNeedZb = False
 
 def needSeedZbStart():
     global isRetryNeedZb
-    print('装备乞讨任务')
+    logging.info('装备乞讨任务')
     if (isRetryNeedZb == False):
         ToHomePage()
         WaitToClickImg('img/other/hanghui.png')
@@ -961,14 +1090,14 @@ def needSeedZbStart():
     if (IsHasImg('img/other/needSend2.png', False) == True):
         needSeedZb()
     else:
-        print("确认上期乞讨")
+        logging.info("确认上期乞讨")
         WaitToClickImg('img/main/sure.png')
         time.sleep(1)
         # WaitToClickImg('img/other/needSend.png')
         DoKeyDown(huodongKey)
         time.sleep(1)
         if (IsHasImg('img/main/sure.png', False) == True):
-            print("上期乞讨尚未结束")
+            logging.info("上期乞讨尚未结束")
             DoKeyDown(exitKey)
             DoKeyDown(exitKey)
             time.sleep(0.5)
@@ -978,12 +1107,12 @@ def needSeedZbStart():
 
 
 def needSeedZb():
-    print("装备乞讨")
-    if (WaitToClickImg(GetZBPath(needZbName), False, maxTry=5, match=0.7) == False):
-        print("找不到装备，反转排序")
+    logging.info("装备乞讨")
+    if (WaitToClickImg(GetZBPath(zbmap[needZbName]), False, maxTry=5, match=0.7) == False):
+        logging.info("找不到装备，反转排序")
         DoKeyDown(partyKey)
         time.sleep(1)
-    if (WaitToClickImg(GetZBPath(needZbName), maxTry=5, match=0.7)):
+    if (WaitToClickImg(GetZBPath(zbmap[needZbName]), maxTry=5, match=0.7)):
         WaitToClickImg('img/other/needSend2.png')
         WaitToClickImg('img/main/sure.png')
         WaitToClickImg('img/main/sure.png')
@@ -1007,29 +1136,27 @@ tuichuMaxTry = 0
 def ClickPlayer():
     global playerName
     if (playerName == ""):
-        print("玩家角色 为空!")
+        logging.info("玩家角色 为空!")
         playerName = "player0"
 
-    while (WaitToClickImg('img/main/'+playerName+'.png', isClick=False, isRgb=True, match=0.6, maxTry=8) == NULL):
+    while (WaitToClickImg('img/main/' + playerName + '.png', isClick=False, isRgb=True, match=0.6, maxTry=8) == NULL):
         ExitSaoDang()
-        print("No player")
-    ClickUntilNul('img/main/'+playerName+'.png', offsetY=50,
-                  maxTry=8, isRgb=True, match=0.6)
+        logging.info("No player")
+    ClickUntilNul('img/main/' + playerName + '.png', offsetY=50, maxTry=8, isRgb=True, match=0.6)
 
 
 def ClickPlayer_Or_Next():
     global playerName
     if (playerName == ""):
-        print("玩家角色 为空!")
+        logging.info("玩家角色 为空!")
         playerName = "player0"
 
-    while (WaitToClickImg('img/main/'+playerName+'.png', isClick=False, isRgb=True, match=0.6, maxTry=8) == NULL):
+    while (WaitToClickImg('img/main/' + playerName + '.png', isClick=False, isRgb=True, match=0.6, maxTry=8) == NULL):
         if (IsHasImg('img/main/next2.png', False)):
             FinghtNext()
         ExitSaoDang()
-        print("No player")
-    ClickUntilNul('img/main/'+playerName+'.png', offsetY=50,
-                  maxTry=8, isRgb=True, match=0.6)
+        logging.info("No player")
+    ClickUntilNul('img/main/' + playerName + '.png', offsetY=50, maxTry=8, isRgb=True, match=0.6)
 
 
 def FinghtNext():
@@ -1055,7 +1182,7 @@ def OnTuitu():
         ClickPlayer()
 
     if (WaitToClickImg('img/tansuo/start2.png', match=hightMatch, isRgb=True, maxTry=16, isClick=False)):
-        print("检测到不能扫荡 -> 新关卡")
+        logging.info("检测到不能扫荡 -> 新关卡")
         time.sleep(1)
 
         DoKeyDown(playerKey)
@@ -1065,7 +1192,7 @@ def OnTuitu():
         DoKeyDown(playerKey)
         DoKeyDown(playerKey)
 
-        print("sleep 10")
+        logging.info("sleep 10")
         time.sleep(10)
         WaitImgLongTime("img/main/next2.png")
 
@@ -1083,12 +1210,12 @@ def OnTuitu():
             OnTuitu()
             return
         else:
-            print("已经全部通关...")
+            logging.info("已经全部通关...")
             ExitSaoDang()
 
 
 def OnAutoTaskStart():
-    print("AutoTask")
+    logging.info("AutoTask")
     OnAutoTask()
 
 
@@ -1096,7 +1223,7 @@ menuNofindTime = 0
 
 
 def OnAutoTask():
-    print("AutoTask")
+    logging.info("AutoTask")
     global menuNofindTime
 
     hasMenu = False
@@ -1119,12 +1246,12 @@ def OnAutoTask():
         time.sleep(0.6)
 
     # 没有菜单
-    if ((1-hasMenu) or (IsHasImg('img/task/menu.png', isClick=False) == False)):
+    if ((1 - hasMenu) or (IsHasImg('img/task/menu.png', isClick=False) == False)):
         # 需要区分是视频还是 主页
         if (IsHasImg('img/task/close.png', stopTime=6) == False and IsHasImg('img/task/noSound.png') == False):
             DoKeyDown(exitKey)
             time.sleep(0.6)
-            menuNofindTime = menuNofindTime+1
+            menuNofindTime = menuNofindTime + 1
 
         IsHasImg('img/task/skipBtn.png')
         IsHasImg('img/task/noSound.png')
@@ -1132,60 +1259,63 @@ def OnAutoTask():
         menuNofindTime = 0
 
     if (menuNofindTime > 1):
-        if ((1-IsHasImg('img/task/skipBtn.png'))):
+        if ((1 - IsHasImg('img/task/skipBtn.png'))):
             if (IsHasImg("img/main/fight.png", False)):
-                print("任务结束")
+                logging.info("任务结束")
                 return
             else:
                 menuNofindTime = 0
         else:
             menuNofindTime = 0
-    print("=====Again======")
+    logging.info("=====Again======")
     OnAutoTask()
+
 
 # 跳过对话
 # def SkipDuiHua():
 
 
 def OnHouDongHard():
-    print('OnHouDongHard')
+    logging.info('OnHouDongHard')
     ToFightPage()
     WaitToClickImg('img/main/dxc.png', False)
     # DoKeyDown(huodongKey)
     WaitToClickImg('img/huodong/jqhd.png')
-    time.sleep(1)
     DoKeyDown(exitKey)
-    time.sleep(0.5)
     DoKeyDown(exitKey)
 
     # 跳过剧情
     while not IsHasImg('img/huodong/baoxiang.png', False) and not IsHasImg('img/huodong/hard1.png', False) and not IsHasImg('img/huodong/hard2.png', False):
-        print("跳过剧情")
+        logging.info("跳过剧情")
         DoKeyDown(exitKey)
-        time.sleep(0.5)
 
     if IsHasImg('img/huodong/baoxiang.png', False):
-        print("打开活动困难关卡")
+        logging.info("打开活动困难关卡")
         DoKeyDown(groupKeys[3])
-        time.sleep(1)
         DoKeyDown(partyKey)
-        time.sleep(1)
 
     # ClickPlayer()
-    # TODO 选关卡
-    print('刷剧情活动1-5')
-    WaitToClickImg('img/huodong/jqhd1-5.png')
-    time.sleep(1)
-    for i in range(5):
-        if IsHasImg('img/tansuo/start2.png', False):
-            print('当前关卡已经打过了')
-            MoveToLeft()
-            continue
-        SaoDang(2)
-        DoKeyDown(groupKeys[0])
-        DoKeyDown(groupKeys[0])
-        DoKeyDown(groupKeys[0])
-    DoKeyDown(exitKey)
+    logging.info('刷剧情活动' + huoDongHard)
+    if huoDongHard:
+        beats = list(huoDongHard)
+        WaitToClickImg('img/huodong/jqhd1-5.png')
+        for i in range(5):
+            time.sleep(1)
+            if str(5 - i) not in beats:
+                logging.info('跳过当前关卡')
+                MoveToLeft()
+                continue
+            if not IsHasImg('img/main/tiaozhan.png', False):
+                logging.info('当前关卡已经打过了')
+                MoveToLeft()
+                continue
+            SaoDang(2)
+            DoKeyDown(exitKey)
+            DoKeyDown(exitKey)
+            DoKeyDown(exitKey)
+        DoKeyDown(exitKey)
+    else:
+        logging.info('必须输入剧情活动关卡')
 
     # vhboss
     time.sleep(1)
@@ -1193,16 +1323,16 @@ def OnHouDongHard():
         DoKeyDown(huoDongVHBossKey)
         time.sleep(0.5)
         if IsHasImg('img/main/tiaozhan.png', False):
-            print("VH战斗")
+            logging.info("VH战斗")
             StartNormalFight()
         else:
-            print("VH已经打过了")
-        print("VH结束")
+            logging.info("VH已经打过了")
+        logging.info("VH结束")
     ExitSaoDang()
 
     # 领奖励
     if IsHasImg('img/task/task.png'):
-        print('领活动奖励')
+        logging.info('领活动奖励')
         time.sleep(2)
         DoKeyDown(huoDongJiangLiKeys[0])
         WaitToClickImg("img/task/takeAll.png")
@@ -1212,6 +1342,7 @@ def OnHouDongHard():
         WaitToClickImg("img/task/takeAll.png")
         WaitToClickImg("img/task/close.png")
         DoKeyDown(exitKey)
+    ToHomePage()
 
 
 def MoveToLeft():
@@ -1219,7 +1350,7 @@ def MoveToLeft():
 
 
 def UseAllPower():
-    print('OnHouDongHard')
+    logging.info('OnHouDongHard')
     ToFightPage()
     WaitToClickImg('img/main/zhuXian.png', True)
 
@@ -1229,7 +1360,7 @@ def UseAllPower():
     isSaodang = True
     while (WaitToClickImg('img/tansuo/start2.png', match=hightMatch, isRgb=True, maxTry=6, isClick=False)):
         MoveToLeft()
-        i = i+1
+        i = i + 1
         if (i > 3):
             isSaodang = False
             break
@@ -1245,16 +1376,17 @@ def DianZan():
     WaitToClickImg('img/other/members.png')
     time.sleep(2)
 
-    print("开始点赞任务")
+    logging.info("开始点赞任务")
     if (IsHasImg('img/other/dianzan.png', False) == False):
-        print("已经点过赞了")
+        logging.info("已经点过赞了")
     else:
         # TODO 选人
-        print("开始点赞")
+        logging.info("开始点赞")
         WaitToClickImg('img/other/dianzan.png')
         time.sleep(2)
-    print("点赞完成")
+    logging.info("点赞完成")
     ToHomePage()
+
 
 # 日常任务
 
@@ -1301,18 +1433,16 @@ def DailyTasks():
 
 
 def CloseMoniqi():
-    print("3 秒后关闭模拟器")
+    logging.info("3 秒后关闭模拟器")
     time.sleep(3)
-    win32api.ShellExecute(0, 'open', GetFullPath(
-        'CloseLeiDian.cmd'), '', '', 1)
+    win32api.ShellExecute(0, 'open', GetFullPath('CloseLeiDian.cmd'), '', '', 1)
 
 
 def _async_raise(tid, exctype):
     tid = ctypes.c_long(tid)
     if not inspect.isclass(exctype):
         exctype = type(exctype)
-    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-        tid, ctypes.py_object(exctype))
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(exctype))
     if res == 0:
         raise ValueError("invalid thread id")
     elif res != 1:
@@ -1321,17 +1451,17 @@ def _async_raise(tid, exctype):
 
 
 def ClickCenter():
-    print("Center")
-    Click(x=width/2, y=height*0.55)
-    Click(x=width/2, y=height*0.53)
-    Click(x=width/2, y=height*0.50)
-    Click(x=width/2, y=height*0.45)
-    Click(x=width/2, y=height*0.43)
-    Click(x=width/2, y=height*0.40)
+    logging.info("Center")
+    Click(x=width / 2, y=height * 0.55)
+    Click(x=width / 2, y=height * 0.53)
+    Click(x=width / 2, y=height * 0.50)
+    Click(x=width / 2, y=height * 0.45)
+    Click(x=width / 2, y=height * 0.43)
+    Click(x=width / 2, y=height * 0.40)
 
 
 def WaitStart():
-    print('=== WaitStart ===')
+    logging.info('=== WaitStart ===')
     while (IsHasImg("img/main/fight.png", False, stopTime=3) == False):
         DoKeyDown(exitKey)
         time.sleep(2)
@@ -1341,7 +1471,7 @@ def WaitStart():
         if (IsHasImg("img/main/sure.png", True)):
             Click()
             time.sleep(10)
-            print('=== Update sleep 10 ===')
+            logging.info('=== Update sleep 10 ===')
         # 跳过生日
         if (IsHasImg("img/main/skipIco.png", True)):
             Click()
@@ -1357,7 +1487,7 @@ def WaitStart():
         # if(IsHasImg("img/other/brithDay.png")):
 
         if (IsHasImg("img/main/home.png", stopTime=3)):
-            print("find home")
+            logging.info("find home")
 
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
@@ -1367,13 +1497,14 @@ def WaitStart():
     time.sleep(1)
     ToHomePage()
 
+
 # 按下Esc 停止
 
 
 def CheckEnd(_key):
     while (True):
         keyboard.wait(_key)
-        print(_key)
+        logging.info(_key)
         os._exit(0)
 
 
@@ -1384,7 +1515,7 @@ exitKey = 'Z'
 huodongKey = 'X'
 playerKey = 'P'  # p是挑战位置
 nextKey = 'L'  # n 是下一步
-endKey = 'Esc'
+endKey = 'ESC'
 # roleKey 123
 listSelectKeys = ['I', 'J', 'N']
 roleKeys = ['1', '2', '3', '4', '5']
@@ -1439,6 +1570,7 @@ isKillBossKey = 'isKillBoss'
 
 isHomeTakeKey = 'isHomeTake'
 isHouDongHardKey = 'isHouDongHard'
+huoDongHardKeys = 'huoDongHard'
 isUseAllPowerKey = 'isUseAllPower'
 needZbNameKey = 'needZbName'
 playerNameKey = 'playerName'
@@ -1465,7 +1597,6 @@ isXQB = GetBoolConfig(isXQBKey)
 isSend = GetBoolConfig(isSendKey)
 isNeedSeed = GetBoolConfig(isNeedSeedKey)
 
-
 isRunAndStart = GetBoolConfig(isRunAndStartKey)
 isAutoClose = GetBoolConfig(isAutoCloseKey)
 isTuitu = GetBoolConfig(isTuituKey)
@@ -1473,6 +1604,7 @@ isFor64 = GetBoolConfig(isFor64Key)
 isAutoTask = GetBoolConfig(isAutoTaskKey)
 isHomeTake = GetBoolConfig(isHomeTakeKey)
 isHouDongHard = GetBoolConfig(isHouDongHardKey)
+huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
 isUseAllPower = GetBoolConfig(isUseAllPowerKey)
 isDianZan = GetBoolConfig(isDianZanKey)
@@ -1504,7 +1636,7 @@ def test():
         time.sleep(0.5)
         testWin(i, i)
 
-    print("testend")
+    logging.info("testend")
     time.sleep(40)
     return
 
@@ -1514,10 +1646,10 @@ def testWin(x, y):
     ret2 = win32gui.GetClientRect(Subhwnd)
     height = ret[3] - ret[1]
     width = ret[2] - ret[0]
-    tx = int(x * width/960)
-    ty = int(y * height/540)
-    print(ret, ret2)
-    print(height, width, "oldPos:", x, y, "truePos:", tx, ty)
+    tx = int(x * width / 960)
+    ty = int(y * height / 540)
+    logging.info(str(ret) + ' ' + str(ret2))
+    logging.info(str(height) + str(width) + " oldPos:" + x + y + " truePos:" + str(tx) + str(ty))
 
     return
 
@@ -1526,26 +1658,26 @@ def RunAutoPcr():
     # 按下Esc键停止
     global t0
     global t1
-    t0 = threading.Thread(target=CheckEnd, args=(endKey,))
+    t0 = threading.Thread(target=CheckEnd, args=(endKey, ))
     t0.start()
     WaitWin32Start()
     # test()
     time.sleep(0.5)
     if (isRunAndStart):
-        print('Wait Start... ', moniqTime, "s")
+        logging.info('Wait Start... ' + str(moniqTime) + "s")
         time.sleep(moniqTime)
         WaitStart()
     else:
         time.sleep(2)
 
-    print('=== Start ===')
-    print('\n=== 按Exc退出程序 ===\n')
+    logging.info('=== Start ===')
+    logging.info('\n=== 按Exc退出程序 ===\n')
 
-# 日常
+    # 日常
     # OnAutoTask()
     DailyTasks()
     # tuichu()
-    print('=== end ===')
+    logging.info('=== end ===')
 
     if (isAutoClose):
         CloseMoniqi()
