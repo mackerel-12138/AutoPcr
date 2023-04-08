@@ -33,8 +33,9 @@ curDir = os.path.dirname(__file__)
 
 
 def GetFullPath(pngName):
-    global curDir
-    return os.path.join(curDir, pngName)
+    # global curDir
+    # return os.path.join(curDir, pngName)
+    return '.\\' + pngName
 
 
 # 利用文件是否存在判断是Exe 还是 Py文件
