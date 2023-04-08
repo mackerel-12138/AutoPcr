@@ -601,8 +601,8 @@ def StartJJC():
     logging.info("战斗开始")
     DoKeyDown(listSelectKeys[0])
     time.sleep(1)
-    if IsHasImg("img/jjc/lengque.png", False):
-        logging.info("jjc冷却中。。。")
+    if IsHasImg("img/jjc/lengque.png", False) or IsHasImg("img/jjc/tiaozhancishu.png", False):
+        logging.info("jjc冷却中或已达今日上限。。。")
         ToHomePage()
         return
     DoKeyDown(playerKey)
@@ -969,7 +969,7 @@ def BuyExp():
         expCounter = 1
         while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
             expCounter = expCounter + 1
-            logging.info('IsHasImg', expCounter)
+            logging.info('IsHasImg ' + str(expCounter))
         WaitToClickImg('img/shop/buyBtn.png')
         WaitToClickImg('img/shop/buyTitle.png', False)
         WaitToClickImg('img/main/sure.png')
