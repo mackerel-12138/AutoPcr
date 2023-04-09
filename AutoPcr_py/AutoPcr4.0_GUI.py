@@ -30,10 +30,12 @@ def GetFullPath(pngName):
 # ======读取配置======
 mnqIndexKey = 'mnqDrop'
 dxcDropKey = 'dxcDrop'
-needZbNameKey = 'Drop'
-dxcDropValue = ["炸脖龙", "绿龙"]
+needZbNameKey = 'zbDrop'
+buyExpNumKey = 'buyExpNumDrop'
+dxcDropValue = ["炸脖龙", "绿龙", "黑白王"]
 mnqIndexDropValue = ["1", "0"]
 needZbNameValue = ['新月的悲叹', '焰帝戒指', '忘哭之冠', '深渊之弓', '愤怒法杖', '鹰神之煌剑', '狮鹫羽饰', '恶魔法杖']
+buyExpNumValue = [1, 2, 3, 4, 5, 6, 7, 8]
 
 cfg = ConfigParser()
 configPath = GetFullPath('config.ini')
@@ -107,6 +109,7 @@ isJJCKey = 'isJJC'
 isTansuoKey = 'isTansuo'
 isDxcKey = 'isDxc'
 isExpKey = 'isExp'
+isStoneKey = 'isStone'
 isNiuDanKey = 'isNiuDan'
 LeiDianDirKey = 'LeiDianDir'
 isRunAndStartKey = 'isRunAndStart'
@@ -142,6 +145,8 @@ isJJC = GetBoolConfig(isJJCKey)
 isTansuo = GetBoolConfig(isTansuoKey)
 isDxc = GetBoolConfig(isDxcKey)
 isExp = GetBoolConfig(isExpKey)
+isStone = GetBoolConfig(isStoneKey)
+buyExpNum = GetStrConfig(buyExpNumKey)
 isNiuDan = GetBoolConfig(isNiuDanKey)
 isKillBoss = GetBoolConfig(isKillBossKey)
 isXinSui = GetBoolConfig(isXinSuiKey)
@@ -188,6 +193,8 @@ def SavaConfig(AllValues):
     SetConfigAuto(isTansuoKey, AllValues)
     SetConfigAuto(isDxcKey, AllValues)
     SetConfigAuto(isExpKey, AllValues)
+    SetConfigAuto(isStoneKey, AllValues)
+    SetConfigAuto(buyExpNumKey, AllValues)
     SetConfigAuto(isNiuDanKey, AllValues)
     SetConfigAuto(isAutoCloseKey, AllValues)
     SetConfigAuto(isFor64Key, AllValues)  # new
@@ -232,6 +239,7 @@ def ReadConfig():
     ReadBoolConfig(isTansuoKey)
     ReadBoolConfig(isDxcKey)
     ReadBoolConfig(isExpKey)
+    ReadBoolConfig(isStoneKey)
     ReadBoolConfig(isNiuDanKey)
     ReadBoolConfig(isAutoCloseKey)
     ReadBoolConfig(isFor64Key)
@@ -323,14 +331,26 @@ sg.theme('SystemDefaultForReal')
 sg.set_global_icon('img/other/icon.ico')
 left_col = [
     [sg.Text('日常功能'), sg.Checkbox('', isAllSelect1, key=isAllSelectKey_1, enable_events=True)],
-    [sg.Checkbox('竞技场', isJJC, key=isJJCKey),
-     sg.Checkbox('探索', isTansuo, key=isTansuoKey),
-     sg.Checkbox('地下城', isDxc, key=isDxcKey)],
-    [sg.Checkbox('购买经验', isExp, key=isExpKey),
-     sg.Checkbox('扭蛋', isNiuDan, key=isNiuDanKey),
-     sg.Checkbox('领取奖励', isHomeTake, key=isHomeTakeKey)],
+    [
+        sg.Checkbox('竞技场', isJJC, key=isJJCKey),
+        sg.Checkbox('探索', isTansuo, key=isTansuoKey),
+        sg.Checkbox('地下城', isDxc, key=isDxcKey),
+    ],
+    [
+        sg.Checkbox('购买经验', isExp, key=isExpKey),
+        sg.Checkbox('购买石头', isStone, key=isStoneKey),
+        sg.Text('购买次数'),
+        sg.DropDown(buyExpNumValue, buyExpNum, key=buyExpNumKey, size=(2, None)),
+    ],
+    [
+        sg.Checkbox('扭蛋', isNiuDan, key=isNiuDanKey),
+        sg.Checkbox('领取奖励', isHomeTake, key=isHomeTakeKey),
+    ],
     [sg.Text('次用功能'), sg.Checkbox('', isAllSelect2, key=isAllSelectKey_2, enable_events=True)],
-    [sg.Checkbox('星球杯', isXQB, key=isXQBKey), sg.Checkbox('心之碎片', isXinSui, key=isXinSuiKey)],
+    [
+        sg.Checkbox('星球杯', isXQB, key=isXQBKey),
+        sg.Checkbox('心之碎片', isXinSui, key=isXinSuiKey),
+    ],
     [sg.Checkbox('普通本清空体力', isUseAllPower, key=isUseAllPowerKey)],
     [
         sg.Checkbox('活动困难本', isHouDongHard, key=isHouDongHardKey),
@@ -338,10 +358,15 @@ left_col = [
         sg.InputText(huoDongHard, size=(8, None), key=huoDongHardKeys),
         sg.Checkbox('VHBoss', isVHBoss, key=isVHBossKey)
     ],
-    [sg.Checkbox('请求捐赠', isNeedSeed, key=isNeedSeedKey),
-     sg.Checkbox('赠送礼物', isSend, key=isSendKey),
-     sg.Checkbox('点赞', isDianZan, key=isDianZanKey)],
-    [sg.Checkbox('自动剧情', isAutoTask, key=isAutoTaskKey), sg.Checkbox('自动推图', isTuitu, key=isTuituKey)],
+    [
+        sg.Checkbox('请求捐赠', isNeedSeed, key=isNeedSeedKey),
+        sg.Checkbox('赠送礼物', isSend, key=isSendKey),
+        sg.Checkbox('点赞', isDianZan, key=isDianZanKey),
+    ],
+    [
+        sg.Checkbox('自动剧情', isAutoTask, key=isAutoTaskKey),
+        sg.Checkbox('自动推图', isTuitu, key=isTuituKey),
+    ],
     [sg.Text('雷电模拟器文件夹:')],
     [sg.InputText(LeiDianDir, size=(35, None), key=LeiDianDirKey), sg.FolderBrowse()],
     [sg.Button('保存配置'), sg.Button(StartRunName), sg.Button(RunName), sg.Button('检查模拟器')],
@@ -398,6 +423,7 @@ def SetAllSelect1():
     window[isTansuoKey].Update(isAllSelect1)
     window[isDxcKey].Update(isAllSelect1)
     window[isExpKey].Update(isAllSelect1)
+    window[isStoneKey].Update(isAllSelect1)
     window[isNiuDanKey].Update(isAllSelect1)
     window[isHomeTakeKey].Update(isAllSelect1)
 

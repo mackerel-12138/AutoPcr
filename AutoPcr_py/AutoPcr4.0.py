@@ -22,6 +22,7 @@ import win32con
 import win32api
 import win32print
 import logging
+from ctypes.wintypes import HWND, POINT
 
 lft = "[%(asctime)s] %(levelname)s %(lineno)d %(message)s"
 logging.basicConfig(level=logging.INFO, format=lft)
@@ -61,7 +62,8 @@ t1 = threading.Thread()
 moniqTimeKey = 'moniqTime'
 dxcDropKey = 'dxcDrop'
 mnqIndexKey = 'mnqDrop'
-dxcDropValue = ["炸脖龙", "绿龙"]
+buyExpNumKey = 'buyExpNumDrop'
+dxcDropValue = ["炸脖龙", "绿龙", "黑白王"]
 mnqIndexDropValue = ["1", "0"]
 
 cfg = ConfigParser()
@@ -305,6 +307,11 @@ key_map = {
     '-': 109
 }
 
+roll_map = {
+    'UP': 1,
+    'DOWN': -1,
+}
+
 zbmap = {
     '新月的悲叹': 'xinyue',
     '焰帝戒指': 'huojie',
@@ -382,6 +389,37 @@ def WaitImgLongTime(targetImg):
         longTimer = longTimer + 1
         if (longTimer > maxTryTime):
             return
+
+
+# 返回图片坐标
+def GetImgXY(targetImg, match=minMatch, isRgb=False):
+    target_ImgPath = GetFullPath(targetImg)
+    Screen_ImgPath = SavaShoot()
+    logging.debug(target_ImgPath)
+    imsrc = ac.imread(Screen_ImgPath)  # 原始图像
+    imsch = ac.imread(target_ImgPath)  # 带查找的部分
+    match_result = ac.find_template(imsrc, imsch, match, rgb=isRgb)
+
+    logging.debug('match : %s %s' % (targetImg, match_result))
+
+    if match_result != None:
+        x, y = match_result['result']
+        if (match_result['confidence'] < warnMatch):
+            logging.debug("\033[1;33m %s %s \033[0m" % (targetImg, match_result['confidence']))
+
+        global Subhwnd, lastY, lastX, trueH, trueW
+        if (x == None):
+            x = lastX
+            y = lastY
+        else:
+            lastX = x
+            lastY = y
+
+        tx = int(x * trueW / 960)
+        ty = int(y * trueH / 540)
+        return tx, ty
+    else:
+        return 0, 0
 
 
 # 查找图片
@@ -462,7 +500,12 @@ def ClickUntilNul(path, offsetY=0, maxTry=20, isRgb=False, match=minMatch):
 # 		ClickUntilNul2(path,exsitPath)
 # 		break
 
+PostMessageW = windll.user32.PostMessageW
+ClientToScreen = windll.user32.ClientToScreen
+WM_MOUSEWHEEL = 0x020A
 
+
+# 点击
 def pressKey(key):
     keyCode = key_map[key]
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYDOWN, keyCode, 0)
@@ -470,9 +513,81 @@ def pressKey(key):
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, keyCode, 0)
 
 
+# TODO  滑动
+def slide(direction):
+    keyCode = key_map[direction]
+    win32gui.PostMessage(Subhwnd, win32con.WM_KEYDOWN, keyCode, 0)
+    time.sleep(0.05)
+    win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, keyCode, 0)
+
+
+# 滚动
+def roll(direction: str, distance: int):
+    main_rect = win32gui.GetWindowRect(Subhwnd)
+    #rollCode = roll_map[direction]
+    x, y = GetImgXY('img/shop/exp2.png')
+    #Click(x, y)
+    logging.info('x ' + str(x) + ' y ' + str(y))
+    logging.info('x ' + str(main_rect[0]) + ' y ' + str(main_rect[1]))
+    lParam = win32api.MAKELONG(main_rect[0] + x, main_rect[1] + y)
+    win32api.PostMessage(Subhwnd, win32con.WM_MOUSEWHEEL, win32api.MAKELONG(0, -480), lParam)
+
+
+def move_to(x: int, y: int):
+    """移动鼠标到坐标(x, y)
+
+    Args:
+        handle (HWND): 窗口句柄
+        x (int): 横坐标
+        y (int): 纵坐标
+    """
+    wparam = 0
+    lparam = y << 16 | x
+    win32gui.SendMessage(Subhwnd, win32con.WM_MOUSEMOVE, wparam, lparam)
+
+
+def scroll(delta: int, x: int, y: int):
+    """在坐标(x, y)滚动鼠标滚轮
+
+    Args:
+        handle (HWND): 窗口句柄
+        delta (int): 为正向上滚动，为负向下滚动
+        x (int): 横坐标
+        y (int): 纵坐标
+    """
+    wparam = delta << 16
+    p = POINT(x, y)
+    ClientToScreen(Subhwnd, byref(p))
+    lparam = p.y << 16 | p.x
+    main_rect = win32gui.GetWindowRect(Subhwnd)
+    win32api.SetCursorPos([main_rect[0] + x, main_rect[1] + y])
+    win32gui.SendMessage(Subhwnd, WM_MOUSEWHEEL, wparam, lparam)
+
+
+def scroll_up(x: int, y: int):
+    """在坐标(x, y)向上滚动鼠标滚轮
+
+    Args:
+        handle (HWND): 窗口句柄
+        x (int): 横坐标
+        y (int): 纵坐标
+    """
+    scroll(win32con.WHEEL_DELTA * 2, x, y)
+
+
 def DoKeyDown(key):
     pressKey(key)
     time.sleep(1)
+
+
+def DoSlide(direction):
+    slide(direction)
+    time.sleep(1)
+
+
+def DoRoll(direction: str, distance: int):
+    roll(direction, distance)
+    time.sleep(3)
 
 
 def LongTimeCheck(im1, im2):
@@ -880,7 +995,7 @@ def StartBoss():
     DoKeyDown(playerKey)
 
     roleLoop = GetBossLoopKey(StartBossIndex)
-    logging.info('roleLoop ', roleLoop)
+    logging.info('roleLoop ' + roleLoop)
     if (roleLoop != '0'):
         StartLoopKeyDown(roleLoop)
 
@@ -889,6 +1004,7 @@ def StartBoss():
 
 
 def WaitBossFight():
+    ## TODO
     if LongTimeCheck('img/dxc_ex3/win.png', dxcDir + '/lose.png'):
         # win
         logging.info('战斗胜利')
@@ -946,38 +1062,42 @@ def StartNormalFight():
 
 # endregion
 def BuyExp():
-    time.sleep(1)
+    # TODO 石头 界面选择 次数限制
+    logging.info('买经验和石头, 购买数量' + str(buyExpNum))
     ToHomePage()
     ToShopPage()
     WaitToClickImg('img/shop/shopTop.png', False)
+    if IsHasImg('img/shop/shopTop.png', False):
+        DoKeyDown(groupKeys[1])
+    else:
+        BuyExp()
 
-    buyTime = 1
-    if (isBuyMoreExp):
-        buyTime = 5
-
-    for i in range(buyTime):
-        if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
-            # ToHomePage()
-            logging.info('no to buy->update')
-            WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
-        if (i > 0):
-            WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
-        expCounter = 1
-        while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
-            expCounter = expCounter + 1
-            logging.info('IsHasImg ' + str(expCounter))
-        WaitToClickImg('img/shop/buyBtn.png')
-        WaitToClickImg('img/shop/buyTitle.png', False)
-        WaitToClickImg('img/main/sure.png')
-        time.sleep(0.5)
-        WaitToClickImg('img/main/sure.png')
+    for i in range(10):
+        logging.info('购买经验, 当前次数: ' + str(i + 1))
+        DoRoll('DOWN', 2)
+        #DoRoll('UP', 2)
+        # if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
+        #     logging.info('no to buy->update')
+        #     WaitToClickImg('img/shop/update.png')
+        #     WaitToClickImg('img/main/sure.png')
+        # if (i > 0):
+        #     WaitToClickImg('img/shop/update.png')
+        #     WaitToClickImg('img/main/sure.png')
+        # expCounter = 1
+        # while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
+        #     expCounter = expCounter + 1
+        #     logging.info('IsHasImg ' + str(expCounter))
+        # WaitToClickImg('img/shop/buyBtn.png')
+        # WaitToClickImg('img/shop/buyTitle.png', False)
+        # WaitToClickImg('img/main/sure.png')
+        # time.sleep(0.5)
+        # WaitToClickImg('img/main/sure.png')
 
     ToHomePage()
 
 
 def NiuDan():
+    # TODO 按键位置
     WaitToClickImg('img/main/niuDan.png')
     time.sleep(2)
     DoKeyDown(exitKey)
@@ -1313,6 +1433,7 @@ def OnHouDongHard():
     # vhboss
     time.sleep(1)
     if (isVHBoss):
+        # TODO 缺票
         DoKeyDown(huoDongVHBossKey)
         time.sleep(0.5)
         if IsHasImg('img/main/tiaozhan.png', False):
@@ -1385,7 +1506,7 @@ def DianZan():
 
 
 def DailyTasks():
-    if (isExp):
+    if isExp or isStone:
         BuyExp()
     if (isNiuDan):
         NiuDan()
@@ -1536,6 +1657,13 @@ def GetBoolConfig(boolKey):
         return False
 
 
+def GetIntConfig(key):
+    try:
+        return int(cfg.get(MainSettingKey, key))
+    except:
+        return 0
+
+
 isRunAndStart = False
 
 StartRunName = "启动模拟器并运行"
@@ -1545,6 +1673,7 @@ isJJCKey = 'isJJC'
 isTansuoKey = 'isTansuo'
 isDxcKey = 'isDxc'
 isExpKey = 'isExp'
+isStoneKey = 'isStone'
 isNiuDanKey = 'isNiuDan'
 LeiDianDirKey = 'LeiDianDir'
 isRunAndStartKey = 'isRunAndStart'
@@ -1581,6 +1710,8 @@ isJJC = GetBoolConfig(isJJCKey)
 isTansuo = GetBoolConfig(isTansuoKey)
 isDxc = GetBoolConfig(isDxcKey)
 isExp = GetBoolConfig(isExpKey)
+isStone = GetBoolConfig(isStoneKey)
+buyExpNum = GetIntConfig(buyExpNumKey)
 isNiuDan = GetBoolConfig(isNiuDanKey)
 isKillBoss = GetBoolConfig(isKillBossKey)
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
