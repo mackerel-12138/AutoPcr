@@ -307,10 +307,30 @@ key_map = {
     '-': 109
 }
 
-roll_map = {
-    'UP': 1,
-    'DOWN': -1,
-}
+SCROLL_KEYS_1 = 0
+SCROLL_KEYS_2 = 1
+SCROLL_200MS = 0.2
+SCROLL_400MS = 0.4
+SCROLL_600MS = 0.6
+SCROLL_800MS = 0.8
+DIRECTION_UP = 'UP'
+DIRECTION_DOWN = 'DOWN'
+DIRECTION_LEFT = 'LEFT'
+DIRECTION_RIGHT = 'RIGHT'
+scroll_keys_list = [
+    {
+        'UP': 'UP',
+        'DOWN': 'DOWN',
+        'LEFT': 'LEFT',
+        'RIGHT': 'RIGHT',
+    },
+    {
+        'UP': '8',
+        'DOWN': '2',
+        'LEFT': '4',
+        'RIGHT': '6',
+    },
+]
 
 zbmap = {
     '新月的悲叹': 'xinyue',
@@ -500,10 +520,6 @@ def ClickUntilNul(path, offsetY=0, maxTry=20, isRgb=False, match=minMatch):
 # 		ClickUntilNul2(path,exsitPath)
 # 		break
 
-PostMessageW = windll.user32.PostMessageW
-ClientToScreen = windll.user32.ClientToScreen
-WM_MOUSEWHEEL = 0x020A
-
 
 # 点击
 def pressKey(key):
@@ -513,81 +529,87 @@ def pressKey(key):
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, keyCode, 0)
 
 
-# TODO  滑动
-def slide(direction):
-    keyCode = key_map[direction]
+def scroll(num: int, direction: str, times: float):
+    """使用雷电模拟器的控制视角按键实现滑动
+
+    Args:
+        num (int): 按键配置序号
+        direction (str): 滑动方向
+        times (float): 滑动时间
+    """
+    keyCode = key_map[scroll_keys_list[num][direction]]
+    logging.info(keyCode)
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYDOWN, keyCode, 0)
-    time.sleep(0.05)
+    time.sleep(times)
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, keyCode, 0)
 
+    # """在坐标(x, y)滚动鼠标滚轮
 
-# 滚动
-def roll(direction: str, distance: int):
-    main_rect = win32gui.GetWindowRect(Subhwnd)
-    #rollCode = roll_map[direction]
-    x, y = GetImgXY('img/shop/exp2.png')
-    #Click(x, y)
-    logging.info('x ' + str(x) + ' y ' + str(y))
-    logging.info('x ' + str(main_rect[0]) + ' y ' + str(main_rect[1]))
-    lParam = win32api.MAKELONG(main_rect[0] + x, main_rect[1] + y)
-    win32api.PostMessage(Subhwnd, win32con.WM_MOUSEWHEEL, win32api.MAKELONG(0, -480), lParam)
-
-
-def move_to(x: int, y: int):
-    """移动鼠标到坐标(x, y)
-
-    Args:
-        handle (HWND): 窗口句柄
-        x (int): 横坐标
-        y (int): 纵坐标
-    """
-    wparam = 0
-    lparam = y << 16 | x
-    win32gui.SendMessage(Subhwnd, win32con.WM_MOUSEMOVE, wparam, lparam)
+    # Args:
+    #     delta (int): 为正向上滚动，为负向下滚动
+    #     x (int): 横坐标
+    #     y (int): 纵坐标
+    # """
+    # wparam = delta << 16
+    # p = POINT(x, y)
+    # ClientToScreen(Subhwnd, byref(p))
+    # lparam = p.y << 16 | p.x
+    # main_rect = win32gui.GetWindowRect(Subhwnd)
+    # win32api.SetCursorPos([main_rect[0] + x, main_rect[1] + y])
+    # win32gui.SendMessage(Subhwnd, WM_MOUSEWHEEL, wparam, lparam)
 
 
-def scroll(delta: int, x: int, y: int):
-    """在坐标(x, y)滚动鼠标滚轮
+def scroll_up(num: int, times: int):
+    """使用传入序号的控制视角按键向上滚动鼠标滚轮
 
     Args:
-        handle (HWND): 窗口句柄
-        delta (int): 为正向上滚动，为负向下滚动
-        x (int): 横坐标
-        y (int): 纵坐标
+        num (int): 按键配置序号
+        times (float): 滑动时间
     """
-    wparam = delta << 16
-    p = POINT(x, y)
-    ClientToScreen(Subhwnd, byref(p))
-    lparam = p.y << 16 | p.x
-    main_rect = win32gui.GetWindowRect(Subhwnd)
-    win32api.SetCursorPos([main_rect[0] + x, main_rect[1] + y])
-    win32gui.SendMessage(Subhwnd, WM_MOUSEWHEEL, wparam, lparam)
+    logging.info('向上滑动' + str(times) + 's')
+    scroll(num, DIRECTION_DOWN, times)
+    time.sleep(1)
 
 
-def scroll_up(x: int, y: int):
-    """在坐标(x, y)向上滚动鼠标滚轮
+def scroll_down(num: int, times: int):
+    """使用传入序号的控制视角按键向下滚动鼠标滚轮
 
     Args:
-        handle (HWND): 窗口句柄
-        x (int): 横坐标
-        y (int): 纵坐标
+        num (int): 按键配置序号
+        times (float): 滑动时间
     """
-    scroll(win32con.WHEEL_DELTA * 2, x, y)
+    logging.info('向下滑动' + str(times) + 's')
+    scroll(num, DIRECTION_UP, times)
+    time.sleep(1)
+
+
+def scroll_left(num: int, times: int):
+    """使用传入序号的控制视角按键向左滚动鼠标滚轮
+
+    Args:
+        num (int): 按键配置序号
+        times (float): 滑动时间
+    """
+    logging.info('向左滑动' + str(times) + 's')
+    scroll(num, DIRECTION_RIGHT, times)
+    time.sleep(1)
+
+
+def scroll_right(num: int, times: int):
+    """使用传入序号的控制视角按键向右滚动鼠标滚轮
+
+    Args:
+        num (int): 按键配置序号
+        times (float): 滑动时间
+    """
+    logging.info('向右滑动' + str(times) + 's')
+    scroll(num, DIRECTION_LEFT, times)
+    time.sleep(1)
 
 
 def DoKeyDown(key):
     pressKey(key)
     time.sleep(1)
-
-
-def DoSlide(direction):
-    slide(direction)
-    time.sleep(1)
-
-
-def DoRoll(direction: str, distance: int):
-    roll(direction, distance)
-    time.sleep(3)
 
 
 def LongTimeCheck(im1, im2):
@@ -1019,6 +1041,7 @@ def WaitBossFight():
         DoKeyDown(exitKey)
         time.sleep(0.5)
         DoKeyDown(exitKey)
+        # TODO 点击下一步
         ToHomePage()
         logging.info('回到主页')
     else:
@@ -1072,26 +1095,25 @@ def BuyExp():
     else:
         BuyExp()
 
-    for i in range(10):
+    for i in range(buyExpNum):
         logging.info('购买经验, 当前次数: ' + str(i + 1))
-        DoRoll('DOWN', 2)
-        #DoRoll('UP', 2)
-        # if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
-        #     logging.info('no to buy->update')
-        #     WaitToClickImg('img/shop/update.png')
-        #     WaitToClickImg('img/main/sure.png')
-        # if (i > 0):
-        #     WaitToClickImg('img/shop/update.png')
-        #     WaitToClickImg('img/main/sure.png')
-        # expCounter = 1
-        # while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
-        #     expCounter = expCounter + 1
-        #     logging.info('IsHasImg ' + str(expCounter))
-        # WaitToClickImg('img/shop/buyBtn.png')
-        # WaitToClickImg('img/shop/buyTitle.png', False)
-        # WaitToClickImg('img/main/sure.png')
-        # time.sleep(0.5)
-        # WaitToClickImg('img/main/sure.png')
+        #scroll_down(SCROLL_KEYS_1, SCROLL_400MS)
+        if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
+            logging.info('no to buy->update')
+            WaitToClickImg('img/shop/update.png')
+            WaitToClickImg('img/main/sure.png')
+        if (i > 0):
+            WaitToClickImg('img/shop/update.png')
+            WaitToClickImg('img/main/sure.png')
+        expCounter = 1
+        while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
+            expCounter = expCounter + 1
+            logging.info('IsHasImg ' + str(expCounter))
+        WaitToClickImg('img/shop/buyBtn.png')
+        WaitToClickImg('img/shop/buyTitle.png', False)
+        WaitToClickImg('img/main/sure.png')
+        time.sleep(0.5)
+        WaitToClickImg('img/main/sure.png')
 
     ToHomePage()
 
@@ -1503,8 +1525,6 @@ def DianZan():
 
 
 # 日常任务
-
-
 def DailyTasks():
     if isExp or isStone:
         BuyExp()
