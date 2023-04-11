@@ -708,6 +708,54 @@
                     "y": 0
                 }
             }
+        },
+        {
+            "class": "ClassKeyboardPoint",
+            "data": {
+                "key": 83,
+                "secondKey": 0,
+                "point": {
+                    "x": 3977,
+                    "y": 501
+                },
+                "type": 0,
+                "downDuration": 0,
+                "upDuration": 0,
+                "downDurationEx": 0,
+                "upDurationEx": 0,
+                "description": "",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "extraData": ""
+            }
+        },
+        {
+            "class": "ClassKeyboardPoint",
+            "data": {
+                "key": 68,
+                "secondKey": 0,
+                "point": {
+                    "x": 5673,
+                    "y": 460
+                },
+                "type": 0,
+                "downDuration": 0,
+                "upDuration": 0,
+                "downDurationEx": 0,
+                "upDurationEx": 0,
+                "description": "",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "extraData": ""
+            }
         }
     ],
     "configInfo": {

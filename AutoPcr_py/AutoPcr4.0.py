@@ -1031,18 +1031,16 @@ def WaitBossFight():
         # win
         logging.info('战斗胜利')
         StopLoopKeyDown()
-        time.sleep(2.5)
+        time.sleep(5)
         DoKeyDown(nextKey)
-        time.sleep(3)
+        time.sleep(5)
         DoKeyDown(nextKey)
-        time.sleep(3)
+        time.sleep(5)
         DoKeyDown(exitKey)
         time.sleep(0.5)
         DoKeyDown(exitKey)
         time.sleep(0.5)
         DoKeyDown(exitKey)
-        # TODO 点击下一步
-        ToHomePage()
         logging.info('回到主页')
     else:
         # lose
@@ -1096,25 +1094,43 @@ def BuyExp():
         BuyExp()
 
     for i in range(buyExpNum):
-        logging.info('购买经验, 当前次数: ' + str(i + 1))
-        #scroll_down(SCROLL_KEYS_1, SCROLL_400MS)
-        if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
-            logging.info('no to buy->update')
-            WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
-        if (i > 0):
-            WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
-        expCounter = 1
-        while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
-            expCounter = expCounter + 1
-            logging.info('IsHasImg ' + str(expCounter))
+        if isExp:
+            logging.info('购买经验, 当前次数: ' + str(i + 1))
+            if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
+                logging.info('no to buy->update')
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+            if (i > 0):
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+            expCounter = 1
+            while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
+                expCounter = expCounter + 1
+                logging.info('IsHasImg ' + str(expCounter))
+
+        if isStone:
+            scroll_down(SCROLL_KEYS_1, SCROLL_400MS)
+            time.sleep(1)
+            logging.info('购买石头, 当前次数: ' + str(i + 1))
+            if (i == 0 and (not IsHasImg('img/shop/stone1.png', False) and not IsHasImg('img/shop/stone2.png', False))):
+                logging.info('no to buy->update')
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+            if (i > 0):
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+                scroll_down(SCROLL_KEYS_1, SCROLL_400MS)
+                time.sleep(1)
+            expCounter = 1
+            while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
+                expCounter = expCounter + 1
+                logging.info('IsHasImg ' + str(expCounter))
+
         WaitToClickImg('img/shop/buyBtn.png')
         WaitToClickImg('img/shop/buyTitle.png', False)
         WaitToClickImg('img/main/sure.png')
         time.sleep(0.5)
         WaitToClickImg('img/main/sure.png')
-
     ToHomePage()
 
 
@@ -1151,6 +1167,7 @@ def SaoDang(_time=4):
     WaitToClickImg("img/main/sure.png")
     WaitToClickImg("img/main/skip.png")
     DoKeyDown(exitKey)
+    time.sleep(1)
 
 
 def ExitSaoDang():
@@ -1411,7 +1428,7 @@ def OnAutoTask():
 
 
 def OnHouDongHard():
-    logging.info('OnHouDongHard')
+    logging.info('开始剧情活动')
     ToFightPage()
     WaitToClickImg('img/main/dxc.png', False)
     # DoKeyDown(huodongKey)
@@ -1430,7 +1447,7 @@ def OnHouDongHard():
         DoKeyDown(partyKey)
 
     # ClickPlayer()
-    logging.info('刷剧情活动' + huoDongHard)
+    logging.info('刷剧情活动关卡' + huoDongHard)
     if huoDongHard:
         beats = list(huoDongHard)
         WaitToClickImg('img/huodong/jqhd1-5.png')
@@ -1445,9 +1462,6 @@ def OnHouDongHard():
                 MoveToLeft()
                 continue
             SaoDang(2)
-            DoKeyDown(exitKey)
-            DoKeyDown(exitKey)
-            DoKeyDown(exitKey)
         DoKeyDown(exitKey)
     else:
         logging.info('必须输入剧情活动关卡')

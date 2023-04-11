@@ -351,7 +351,6 @@ left_col = [
         sg.Checkbox('星球杯', isXQB, key=isXQBKey),
         sg.Checkbox('心之碎片', isXinSui, key=isXinSuiKey),
     ],
-    [sg.Checkbox('普通本清空体力', isUseAllPower, key=isUseAllPowerKey)],
     [
         sg.Checkbox('活动困难本', isHouDongHard, key=isHouDongHardKey),
         sg.Text('关卡'),
@@ -363,9 +362,10 @@ left_col = [
         sg.Checkbox('赠送礼物', isSend, key=isSendKey),
         sg.Checkbox('点赞', isDianZan, key=isDianZanKey),
     ],
+    [sg.Checkbox('普通本清空体力', isUseAllPower, text_color='red', key=isUseAllPowerKey)],
     [
-        sg.Checkbox('自动剧情', isAutoTask, key=isAutoTaskKey),
-        sg.Checkbox('自动推图', isTuitu, key=isTuituKey),
+        sg.Checkbox('自动剧情', isAutoTask, text_color='red', key=isAutoTaskKey),
+        sg.Checkbox('自动推图', isTuitu, text_color='red', key=isTuituKey),
     ],
     [sg.Text('雷电模拟器文件夹:')],
     [sg.InputText(LeiDianDir, size=(35, None), key=LeiDianDirKey), sg.FolderBrowse()],
