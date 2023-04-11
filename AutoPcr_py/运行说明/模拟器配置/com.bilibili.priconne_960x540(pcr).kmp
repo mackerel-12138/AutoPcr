@@ -192,33 +192,6 @@
         {
             "class": "ClassKeyboardCurve",
             "data": {
-                "key": 80,
-                "secondKey": 0,
-                "curve": [
-                    {
-                        "x": 8806,
-                        "y": 8322,
-                        "timing": 0
-                    },
-                    {
-                        "x": 8806,
-                        "y": 8322,
-                        "timing": 95
-                    }
-                ],
-                "extraData": "",
-                "description": "自动",
-                "moreDescription": "",
-                "hintVisible": true,
-                "hintOffset": {
-                    "x": 0,
-                    "y": 0
-                }
-            }
-        },
-        {
-            "class": "ClassKeyboardCurve",
-            "data": {
                 "key": 88,
                 "secondKey": 0,
                 "curve": [
@@ -343,33 +316,6 @@
                 ],
                 "extraData": "",
                 "description": "",
-                "moreDescription": "",
-                "hintVisible": true,
-                "hintOffset": {
-                    "x": 0,
-                    "y": 0
-                }
-            }
-        },
-        {
-            "class": "ClassKeyboardCurve",
-            "data": {
-                "key": 76,
-                "secondKey": 0,
-                "curve": [
-                    {
-                        "x": 8791,
-                        "y": 9080,
-                        "timing": 0
-                    },
-                    {
-                        "x": 8791,
-                        "y": 9080,
-                        "timing": 119
-                    }
-                ],
-                "extraData": "",
-                "description": "加速",
                 "moreDescription": "",
                 "hintVisible": true,
                 "hintOffset": {
@@ -685,6 +631,130 @@
                     "x": 0,
                     "y": 0
                 }
+            }
+        },
+        {
+            "class": "ClassKeyboardDrag",
+            "data": {
+                "origin": {
+                    "x": 7065,
+                    "y": 4736
+                },
+                "sensitivity": 10,
+                "leftKey": 37,
+                "upKey": 38,
+                "rightKey": 39,
+                "downKey": 40,
+                "description": "",
+                "moreDescription": "",
+                "hintVisible": true,
+                "extraData": "",
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "class": "ClassKeyboardCurve",
+            "data": {
+                "key": 80,
+                "secondKey": 0,
+                "curve": [
+                    {
+                        "x": 8760,
+                        "y": 8309,
+                        "timing": 0
+                    },
+                    {
+                        "x": 8760,
+                        "y": 8309,
+                        "timing": 95
+                    }
+                ],
+                "extraData": "",
+                "description": "自动",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "class": "ClassKeyboardCurve",
+            "data": {
+                "key": 76,
+                "secondKey": 0,
+                "curve": [
+                    {
+                        "x": 8753,
+                        "y": 9080,
+                        "timing": 0
+                    },
+                    {
+                        "x": 8753,
+                        "y": 9080,
+                        "timing": 119
+                    }
+                ],
+                "extraData": "",
+                "description": "加速",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                }
+            }
+        },
+        {
+            "class": "ClassKeyboardPoint",
+            "data": {
+                "key": 83,
+                "secondKey": 0,
+                "point": {
+                    "x": 3977,
+                    "y": 501
+                },
+                "type": 0,
+                "downDuration": 0,
+                "upDuration": 0,
+                "downDurationEx": 0,
+                "upDurationEx": 0,
+                "description": "",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "extraData": ""
+            }
+        },
+        {
+            "class": "ClassKeyboardPoint",
+            "data": {
+                "key": 68,
+                "secondKey": 0,
+                "point": {
+                    "x": 5673,
+                    "y": 460
+                },
+                "type": 0,
+                "downDuration": 0,
+                "upDuration": 0,
+                "downDurationEx": 0,
+                "upDurationEx": 0,
+                "description": "",
+                "moreDescription": "",
+                "hintVisible": true,
+                "hintOffset": {
+                    "x": 0,
+                    "y": 0
+                },
+                "extraData": ""
             }
         }
     ],

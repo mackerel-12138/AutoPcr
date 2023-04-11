@@ -22,6 +22,7 @@ import win32con
 import win32api
 import win32print
 import logging
+from ctypes.wintypes import HWND, POINT
 
 lft = "[%(asctime)s] %(levelname)s %(lineno)d %(message)s"
 logging.basicConfig(level=logging.INFO, format=lft)
@@ -61,7 +62,8 @@ t1 = threading.Thread()
 moniqTimeKey = 'moniqTime'
 dxcDropKey = 'dxcDrop'
 mnqIndexKey = 'mnqDrop'
-dxcDropValue = ["炸脖龙", "绿龙"]
+buyExpNumKey = 'buyExpNumDrop'
+dxcDropValue = ["炸脖龙", "绿龙", "黑白王"]
 mnqIndexDropValue = ["1", "0"]
 
 cfg = ConfigParser()
@@ -305,6 +307,31 @@ key_map = {
     '-': 109
 }
 
+SCROLL_KEYS_1 = 0
+SCROLL_KEYS_2 = 1
+SCROLL_200MS = 0.2
+SCROLL_400MS = 0.4
+SCROLL_600MS = 0.6
+SCROLL_800MS = 0.8
+DIRECTION_UP = 'UP'
+DIRECTION_DOWN = 'DOWN'
+DIRECTION_LEFT = 'LEFT'
+DIRECTION_RIGHT = 'RIGHT'
+scroll_keys_list = [
+    {
+        'UP': 'UP',
+        'DOWN': 'DOWN',
+        'LEFT': 'LEFT',
+        'RIGHT': 'RIGHT',
+    },
+    {
+        'UP': '8',
+        'DOWN': '2',
+        'LEFT': '4',
+        'RIGHT': '6',
+    },
+]
+
 zbmap = {
     '新月的悲叹': 'xinyue',
     '焰帝戒指': 'huojie',
@@ -382,6 +409,37 @@ def WaitImgLongTime(targetImg):
         longTimer = longTimer + 1
         if (longTimer > maxTryTime):
             return
+
+
+# 返回图片坐标
+def GetImgXY(targetImg, match=minMatch, isRgb=False):
+    target_ImgPath = GetFullPath(targetImg)
+    Screen_ImgPath = SavaShoot()
+    logging.debug(target_ImgPath)
+    imsrc = ac.imread(Screen_ImgPath)  # 原始图像
+    imsch = ac.imread(target_ImgPath)  # 带查找的部分
+    match_result = ac.find_template(imsrc, imsch, match, rgb=isRgb)
+
+    logging.debug('match : %s %s' % (targetImg, match_result))
+
+    if match_result != None:
+        x, y = match_result['result']
+        if (match_result['confidence'] < warnMatch):
+            logging.debug("\033[1;33m %s %s \033[0m" % (targetImg, match_result['confidence']))
+
+        global Subhwnd, lastY, lastX, trueH, trueW
+        if (x == None):
+            x = lastX
+            y = lastY
+        else:
+            lastX = x
+            lastY = y
+
+        tx = int(x * trueW / 960)
+        ty = int(y * trueH / 540)
+        return tx, ty
+    else:
+        return 0, 0
 
 
 # 查找图片
@@ -463,11 +521,90 @@ def ClickUntilNul(path, offsetY=0, maxTry=20, isRgb=False, match=minMatch):
 # 		break
 
 
+# 点击
 def pressKey(key):
     keyCode = key_map[key]
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYDOWN, keyCode, 0)
     time.sleep(0.05)
     win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, keyCode, 0)
+
+
+def scroll(num: int, direction: str, times: float):
+    """使用雷电模拟器的控制视角按键实现滑动
+
+    Args:
+        num (int): 按键配置序号
+        direction (str): 滑动方向
+        times (float): 滑动时间
+    """
+    keyCode = key_map[scroll_keys_list[num][direction]]
+    logging.info(keyCode)
+    win32gui.PostMessage(Subhwnd, win32con.WM_KEYDOWN, keyCode, 0)
+    time.sleep(times)
+    win32gui.PostMessage(Subhwnd, win32con.WM_KEYUP, keyCode, 0)
+
+    # """在坐标(x, y)滚动鼠标滚轮
+
+    # Args:
+    #     delta (int): 为正向上滚动，为负向下滚动
+    #     x (int): 横坐标
+    #     y (int): 纵坐标
+    # """
+    # wparam = delta << 16
+    # p = POINT(x, y)
+    # ClientToScreen(Subhwnd, byref(p))
+    # lparam = p.y << 16 | p.x
+    # main_rect = win32gui.GetWindowRect(Subhwnd)
+    # win32api.SetCursorPos([main_rect[0] + x, main_rect[1] + y])
+    # win32gui.SendMessage(Subhwnd, WM_MOUSEWHEEL, wparam, lparam)
+
+
+def scroll_up(num: int, times: int):
+    """使用传入序号的控制视角按键向上滚动鼠标滚轮
+
+    Args:
+        num (int): 按键配置序号
+        times (float): 滑动时间
+    """
+    logging.info('向上滑动' + str(times) + 's')
+    scroll(num, DIRECTION_DOWN, times)
+    time.sleep(1)
+
+
+def scroll_down(num: int, times: int):
+    """使用传入序号的控制视角按键向下滚动鼠标滚轮
+
+    Args:
+        num (int): 按键配置序号
+        times (float): 滑动时间
+    """
+    logging.info('向下滑动' + str(times) + 's')
+    scroll(num, DIRECTION_UP, times)
+    time.sleep(1)
+
+
+def scroll_left(num: int, times: int):
+    """使用传入序号的控制视角按键向左滚动鼠标滚轮
+
+    Args:
+        num (int): 按键配置序号
+        times (float): 滑动时间
+    """
+    logging.info('向左滑动' + str(times) + 's')
+    scroll(num, DIRECTION_RIGHT, times)
+    time.sleep(1)
+
+
+def scroll_right(num: int, times: int):
+    """使用传入序号的控制视角按键向右滚动鼠标滚轮
+
+    Args:
+        num (int): 按键配置序号
+        times (float): 滑动时间
+    """
+    logging.info('向右滑动' + str(times) + 's')
+    scroll(num, DIRECTION_LEFT, times)
+    time.sleep(1)
 
 
 def DoKeyDown(key):
@@ -880,7 +1017,7 @@ def StartBoss():
     DoKeyDown(playerKey)
 
     roleLoop = GetBossLoopKey(StartBossIndex)
-    logging.info('roleLoop ', roleLoop)
+    logging.info('roleLoop ' + roleLoop)
     if (roleLoop != '0'):
         StartLoopKeyDown(roleLoop)
 
@@ -889,21 +1026,21 @@ def StartBoss():
 
 
 def WaitBossFight():
+    ## TODO
     if LongTimeCheck('img/dxc_ex3/win.png', dxcDir + '/lose.png'):
         # win
         logging.info('战斗胜利')
         StopLoopKeyDown()
-        time.sleep(2.5)
+        time.sleep(5)
         DoKeyDown(nextKey)
-        time.sleep(3)
+        time.sleep(5)
         DoKeyDown(nextKey)
-        time.sleep(3)
+        time.sleep(5)
         DoKeyDown(exitKey)
         time.sleep(0.5)
         DoKeyDown(exitKey)
         time.sleep(0.5)
         DoKeyDown(exitKey)
-        ToHomePage()
         logging.info('回到主页')
     else:
         # lose
@@ -946,38 +1083,59 @@ def StartNormalFight():
 
 # endregion
 def BuyExp():
-    time.sleep(1)
+    # TODO 石头 界面选择 次数限制
+    logging.info('买经验和石头, 购买数量' + str(buyExpNum))
     ToHomePage()
     ToShopPage()
     WaitToClickImg('img/shop/shopTop.png', False)
+    if IsHasImg('img/shop/shopTop.png', False):
+        DoKeyDown(groupKeys[1])
+    else:
+        BuyExp()
 
-    buyTime = 1
-    if (isBuyMoreExp):
-        buyTime = 5
+    for i in range(buyExpNum):
+        if isExp:
+            logging.info('购买经验, 当前次数: ' + str(i + 1))
+            if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
+                logging.info('no to buy->update')
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+            if (i > 0):
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+            expCounter = 1
+            while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
+                expCounter = expCounter + 1
+                logging.info('IsHasImg ' + str(expCounter))
 
-    for i in range(buyTime):
-        if (i == 0 and (IsHasImg('img/shop/exp2.png', False) == False)):
-            # ToHomePage()
-            logging.info('no to buy->update')
-            WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
-        if (i > 0):
-            WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
-        expCounter = 1
-        while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
-            expCounter = expCounter + 1
-            logging.info('IsHasImg ' + str(expCounter))
+        if isStone:
+            scroll_down(SCROLL_KEYS_1, SCROLL_400MS)
+            time.sleep(1)
+            logging.info('购买石头, 当前次数: ' + str(i + 1))
+            if (i == 0 and (not IsHasImg('img/shop/stone1.png', False) and not IsHasImg('img/shop/stone2.png', False))):
+                logging.info('no to buy->update')
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+            if (i > 0):
+                WaitToClickImg('img/shop/update.png')
+                WaitToClickImg('img/main/sure.png')
+                scroll_down(SCROLL_KEYS_1, SCROLL_400MS)
+                time.sleep(1)
+            expCounter = 1
+            while ((expCounter <= 4) and (IsHasImg('img/shop/exp.png'))):
+                expCounter = expCounter + 1
+                logging.info('IsHasImg ' + str(expCounter))
+
         WaitToClickImg('img/shop/buyBtn.png')
         WaitToClickImg('img/shop/buyTitle.png', False)
         WaitToClickImg('img/main/sure.png')
         time.sleep(0.5)
         WaitToClickImg('img/main/sure.png')
-
     ToHomePage()
 
 
 def NiuDan():
+    # TODO 按键位置
     WaitToClickImg('img/main/niuDan.png')
     time.sleep(2)
     DoKeyDown(exitKey)
@@ -1009,6 +1167,7 @@ def SaoDang(_time=4):
     WaitToClickImg("img/main/sure.png")
     WaitToClickImg("img/main/skip.png")
     DoKeyDown(exitKey)
+    time.sleep(1)
 
 
 def ExitSaoDang():
@@ -1269,7 +1428,7 @@ def OnAutoTask():
 
 
 def OnHouDongHard():
-    logging.info('OnHouDongHard')
+    logging.info('开始剧情活动')
     ToFightPage()
     WaitToClickImg('img/main/dxc.png', False)
     # DoKeyDown(huodongKey)
@@ -1288,7 +1447,7 @@ def OnHouDongHard():
         DoKeyDown(partyKey)
 
     # ClickPlayer()
-    logging.info('刷剧情活动' + huoDongHard)
+    logging.info('刷剧情活动关卡' + huoDongHard)
     if huoDongHard:
         beats = list(huoDongHard)
         WaitToClickImg('img/huodong/jqhd1-5.png')
@@ -1303,9 +1462,6 @@ def OnHouDongHard():
                 MoveToLeft()
                 continue
             SaoDang(2)
-            DoKeyDown(exitKey)
-            DoKeyDown(exitKey)
-            DoKeyDown(exitKey)
         DoKeyDown(exitKey)
     else:
         logging.info('必须输入剧情活动关卡')
@@ -1313,6 +1469,7 @@ def OnHouDongHard():
     # vhboss
     time.sleep(1)
     if (isVHBoss):
+        # TODO 缺票
         DoKeyDown(huoDongVHBossKey)
         time.sleep(0.5)
         if IsHasImg('img/main/tiaozhan.png', False):
@@ -1382,10 +1539,8 @@ def DianZan():
 
 
 # 日常任务
-
-
 def DailyTasks():
-    if (isExp):
+    if isExp or isStone:
         BuyExp()
     if (isNiuDan):
         NiuDan()
@@ -1536,6 +1691,13 @@ def GetBoolConfig(boolKey):
         return False
 
 
+def GetIntConfig(key):
+    try:
+        return int(cfg.get(MainSettingKey, key))
+    except:
+        return 0
+
+
 isRunAndStart = False
 
 StartRunName = "启动模拟器并运行"
@@ -1545,6 +1707,7 @@ isJJCKey = 'isJJC'
 isTansuoKey = 'isTansuo'
 isDxcKey = 'isDxc'
 isExpKey = 'isExp'
+isStoneKey = 'isStone'
 isNiuDanKey = 'isNiuDan'
 LeiDianDirKey = 'LeiDianDir'
 isRunAndStartKey = 'isRunAndStart'
@@ -1581,6 +1744,8 @@ isJJC = GetBoolConfig(isJJCKey)
 isTansuo = GetBoolConfig(isTansuoKey)
 isDxc = GetBoolConfig(isDxcKey)
 isExp = GetBoolConfig(isExpKey)
+isStone = GetBoolConfig(isStoneKey)
+buyExpNum = GetIntConfig(buyExpNumKey)
 isNiuDan = GetBoolConfig(isNiuDanKey)
 isKillBoss = GetBoolConfig(isKillBossKey)
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
