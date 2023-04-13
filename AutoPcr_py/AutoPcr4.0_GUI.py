@@ -32,7 +32,7 @@ mnqIndexKey = 'mnqDrop'
 dxcDropKey = 'dxcDrop'
 needZbNameKey = 'zbDrop'
 buyExpNumKey = 'buyExpNumDrop'
-dxcDropValue = ["炸脖龙", "绿龙", "黑白王"]
+dxcDropValue = ["黑白王"]
 mnqIndexDropValue = ["1", "0"]
 needZbNameValue = ['新月的悲叹', '焰帝戒指', '忘哭之冠', '深渊之弓', '愤怒法杖', '鹰神之煌剑', '狮鹫羽饰', '恶魔法杖']
 buyExpNumValue = [1, 2, 3, 4, 5, 6, 7, 8]
@@ -438,9 +438,21 @@ def SetAllSelect2():
     window[isXinSuiKey].Update(isAllSelect2)
 
 
+# def OutLog():
+#     yield
+#     fname = './autopcr.log'
+#     with open(fname, 'r', encoding='gbk') as f:
+#         lines = f.readlines()
+#         last_line = lines[-1]
+#         print(last_line)
+
+# log = OutLog()
 # sg.popup_get_folder('Enter the file you wish to process')
 # Event Loop to process "events" and get the "values" of the inputs
 while True:
+    # print("next")
+    # next(log)
+
     event, values = window.read()
     print(event)
     if event == '检查模拟器':
