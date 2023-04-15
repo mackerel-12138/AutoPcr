@@ -881,12 +881,13 @@ def StartDxc(index=1):
         logger.info('今天打完了')
         ToHomePage()
         return
-    if (isKillBoss == False):
+    # 扫荡
+    if isSkipDxc:
         time.sleep(1)
-        if (WaitToClickImg(dxcDir + "/box5.png", False, True, 4)):
-            WaitToClickImg(dxcDir + "/run.png")
+        if IsHasImg(dxcDir + "/skip.png"):
             WaitToClickImg("img/main/sure.png")
-            StartDxc()
+            time.sleep(3)
+            ToHomePage()
             return
     if (nextDxcLevel <= 1):
         logger.info('wait box1...')
@@ -909,9 +910,8 @@ def StartDxc(index=1):
     if (nextDxcLevel <= 4):
         DxcBoxFight(4)
         DxcBoxFightWait()  # 4
-    if (nextDxcLevel <= 5):
-        if (isKillBoss):
-            StartBoss()
+
+    ToHomePage()
 
 
 def CheckAuto():
@@ -925,10 +925,10 @@ def EnterDxc():
     WaitToClickImg("img/main/dxc.png")
     time.sleep(1.5)
     scroll_right(SCROLL_KEYS_1, SCROLL_400MS)
-    IsHasImg(dxcDir + "/ex.png")
+    WaitToClickImg(dxcDir + "/ex.png")
     time.sleep(1)
-    IsHasImg("img/main/sure.png")
-    time.sleep(2)
+    # IsHasImg("img/main/sure.png")
+    # time.sleep(2)
 
 
 def GetBossLoopKey(level):
@@ -942,12 +942,8 @@ def GetBossLoopKey(level):
     return '0'
 
 
-def GetGroupInfo(level, isBoss):
-    rawValue = ""
-    if (isBoss):
-        rawValue = dxcGroupBoss
-    else:
-        rawValue = dxcGroupDaoZhong
+def GetGroupInfo(level):
+    rawValue = dxcGroupDaoZhong
     values = rawValue.split(",")
     listLen = len(values)
     if (rawValue == ""):
@@ -1548,7 +1544,7 @@ def DailyTasks():
         StartJJC()
         StartPJJC()
     if (isDxc):
-        StartDxc(int(dxcStartLevel))
+        StartDxc()
     if (isHomeTake):
         ghHomeTake()
         StartTakeAll()
@@ -1704,6 +1700,8 @@ RunName = "运行"
 isJJCKey = 'isJJC'
 isTansuoKey = 'isTansuo'
 isDxcKey = 'isDxc'
+isSkipDxcKey = 'isSkipDxc'
+dxcGroupDaoZhongKey = 'DxcGroupDaoZhong'
 isExpKey = 'isExp'
 isStoneKey = 'isStone'
 isNiuDanKey = 'isNiuDan'
@@ -1720,7 +1718,6 @@ isXinSuiKey = 'isXinSui'
 isSendKey = 'isSend'
 
 isNeedSeedKey = 'isNeedSeed'
-isKillBossKey = 'isKillBoss'
 
 isHomeTakeKey = 'isHomeTake'
 isHouDongHardKey = 'isHouDongHard'
@@ -1729,10 +1726,6 @@ isUseAllPowerKey = 'isUseAllPower'
 needZbNameKey = 'needZbName'
 playerNameKey = 'playerName'
 
-dxcGroupDaoZhongKey = 'DxcGroupDaoZhong'
-dxcGroupBossKey = 'DxcGroupBoss'
-dxcBossLoopRoleKey = 'dxcBossLoopRole'
-dxcStartLevelKey = 'dxcStartLevel'
 isBuyMoreExpKey = 'isBuyMoreExp'
 isDianZanKey = 'isDianZan'
 isVHBossKey = 'isVHBoss'
@@ -1741,11 +1734,12 @@ isBuyMoreExp = GetBoolConfig(isBuyMoreExpKey)
 isJJC = GetBoolConfig(isJJCKey)
 isTansuo = GetBoolConfig(isTansuoKey)
 isDxc = GetBoolConfig(isDxcKey)
+isSkipDxc = GetBoolConfig(isSkipDxcKey)
+dxcGroupDaoZhong = GetStrConfig(dxcGroupDaoZhongKey)
 isExp = GetBoolConfig(isExpKey)
 isStone = GetBoolConfig(isStoneKey)
 buyExpNum = GetIntConfig(buyExpNumKey)
 isNiuDan = GetBoolConfig(isNiuDanKey)
-isKillBoss = GetBoolConfig(isKillBossKey)
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
 
 isXinSui = GetBoolConfig(isXinSuiKey)
@@ -1766,13 +1760,6 @@ isUseAllPower = GetBoolConfig(isUseAllPowerKey)
 isDianZan = GetBoolConfig(isDianZanKey)
 needZbName = GetStrConfig(needZbNameKey)
 playerName = GetStrConfig(playerNameKey)
-
-dxcGroupBoss = GetStrConfig(dxcGroupBossKey)
-dxcGroupDaoZhong = GetStrConfig(dxcGroupDaoZhongKey)
-dxcBossLoopRole = GetStrConfig(dxcBossLoopRoleKey)
-dxcStartLevel = GetStrConfig(dxcStartLevelKey)
-if (dxcStartLevel == ""):
-    dxcStartLevel = "1"
 
 dxcBoss = GetStrConfig(dxcDropKey)
 dxcDir = "img/dxc"

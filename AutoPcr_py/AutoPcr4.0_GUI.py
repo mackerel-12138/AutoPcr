@@ -108,6 +108,8 @@ RunName = "运行"
 isJJCKey = 'isJJC'
 isTansuoKey = 'isTansuo'
 isDxcKey = 'isDxc'
+isSkipDxcKey = 'isSkipDxc'
+dxcGroupDaoZhongKey = 'DxcGroupDaoZhong'
 isExpKey = 'isExp'
 isStoneKey = 'isStone'
 isNiuDanKey = 'isNiuDan'
@@ -116,17 +118,11 @@ isRunAndStartKey = 'isRunAndStart'
 isAutoCloseKey = 'isAutoClose'
 isFor64Key = 'isFor64'
 
-dxcGroupDaoZhongKey = 'DxcGroupDaoZhong'
-dxcGroupBossKey = 'DxcGroupBoss'
-dxcBossLoopRoleKey = 'dxcBossLoopRole'
-dxcStartLevelKey = 'dxcStartLevel'
-
 # newKey
 isXQBKey = 'isXQB'
 isXinSuiKey = 'isXinSui'
 isSendKey = 'isSend'
 isNeedSeedKey = 'isNeedSeed'
-isKillBossKey = 'isKillBoss'
 
 isHomeTakeKey = 'isHomeTake'
 isHouDongHardKey = 'isHouDongHard'
@@ -144,11 +140,13 @@ moniqTimeKey = 'moniqTime'
 isJJC = GetBoolConfig(isJJCKey)
 isTansuo = GetBoolConfig(isTansuoKey)
 isDxc = GetBoolConfig(isDxcKey)
+isSkipDxc = GetBoolConfig(isSkipDxcKey)
+dxcBoss = GetStrConfig(dxcDropKey)
+dxcGroupDaoZhong = GetStrConfig(dxcGroupDaoZhongKey)
 isExp = GetBoolConfig(isExpKey)
 isStone = GetBoolConfig(isStoneKey)
 buyExpNum = GetStrConfig(buyExpNumKey)
 isNiuDan = GetBoolConfig(isNiuDanKey)
-isKillBoss = GetBoolConfig(isKillBossKey)
 isXinSui = GetBoolConfig(isXinSuiKey)
 isXQB = GetBoolConfig(isXQBKey)
 isSend = GetBoolConfig(isSendKey)
@@ -170,12 +168,7 @@ isDianZan = GetBoolConfig(isDianZanKey)
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
 moniqTime = GetStrConfigDefault(moniqTimeKey, '20')
 
-dxcStartLevel = GetStrConfig(dxcStartLevelKey)
-dxcGroupBoss = GetStrConfig(dxcGroupBossKey)
-dxcGroupDaoZhong = GetStrConfig(dxcGroupDaoZhongKey)
-dxcBossLoopRole = GetStrConfig(dxcBossLoopRoleKey)
 playerName = GetStrConfig(playerNameKey)
-dxcBoss = GetStrConfig(dxcDropKey)
 needZbName = GetStrConfig(needZbNameKey)
 
 # new
@@ -192,6 +185,8 @@ def SavaConfig(AllValues):
     SetConfigAuto(isJJCKey, AllValues)
     SetConfigAuto(isTansuoKey, AllValues)
     SetConfigAuto(isDxcKey, AllValues)
+    SetConfigAuto(isSkipDxcKey, AllValues)
+    SetConfigAuto(dxcGroupDaoZhongKey, AllValues)
     SetConfigAuto(isExpKey, AllValues)
     SetConfigAuto(isStoneKey, AllValues)
     SetConfigAuto(buyExpNumKey, AllValues)
@@ -201,7 +196,7 @@ def SavaConfig(AllValues):
 
     SetConfigAuto(isXQBKey, AllValues)
     SetConfigAuto(isXinSuiKey, AllValues)
-    SetConfigAuto(isKillBossKey, AllValues)
+
     SetConfigAuto(isSendKey, AllValues)
     SetConfigAuto(isNeedSeedKey, AllValues)
     SetConfigAuto(dxcDropKey, AllValues)
@@ -218,10 +213,6 @@ def SavaConfig(AllValues):
 
     SetConfigAuto(needZbNameKey, AllValues)
     SetConfigAuto(playerNameKey, AllValues)
-    SetConfigAuto(dxcGroupBossKey, AllValues)
-    SetConfigAuto(dxcGroupDaoZhongKey, AllValues)
-    SetConfigAuto(dxcBossLoopRoleKey, AllValues)
-    SetConfigAuto(dxcStartLevelKey, AllValues)
 
     # SetConfigAuto(LeiDianDirKey,AllValues)
     global LeiDianDir
@@ -246,7 +237,7 @@ def ReadConfig():
     # new
     ReadBoolConfig(isXQBKey)
     ReadBoolConfig(isXinSuiKey)
-    ReadBoolConfig(isKillBossKey)
+    ReadBoolConfig(isSkipDxcKey)
     ReadBoolConfig(isSendKey)
     ReadBoolConfig(isNeedSeedKey)
     ReadBoolConfig(isHomeTakeKey)
@@ -262,8 +253,6 @@ def ReadConfig():
     ReadStrConfig(dxcDropKey)
     ReadStrConfig(needZbNameKey)
 
-    ReadStrConfig(dxcGroupDaoZhongKey)
-    ReadStrConfig(dxcGroupBossKey)
     ReadStrConfig(playerNameKey)
     ReadStrConfig(moniqTimeKey)
     # ReadStrConfig(mnqIndexKey,AllValues)
@@ -383,18 +372,10 @@ right_col = [
     [sg.Text('玩家角色:img/main/'), sg.InputText(playerName, size=(8, None), key=playerNameKey),
      sg.Text('.png')],
     [sg.Text('装备乞讨'), sg.DropDown(needZbNameValue, needZbName, key=needZbNameKey, size=(10, None))],
-    [
-        sg.Text('地下城'),
-        sg.DropDown(dxcDropValue, dxcBoss, key=dxcDropKey, size=(10, None)),
-        sg.Text('进度'),
-        sg.InputText(dxcStartLevel, size=(2, None), key=dxcStartLevelKey),
-        sg.Checkbox('击杀boss', isKillBoss, key=isKillBossKey)
-    ],
+    [sg.Text('地下城'), sg.DropDown(dxcDropValue, dxcBoss, key=dxcDropKey, size=(10, None)),
+     sg.Checkbox('扫荡', isSkipDxc, key=isSkipDxcKey)],
     [sg.Text('编组-队伍 编组:1~5 队伍:1~3')],
     [sg.Text('道中队:'), sg.InputText(dxcGroupDaoZhong, size=(35, None), key=dxcGroupDaoZhongKey)],
-    [sg.Text('Boss队:'), sg.InputText(dxcGroupBoss, size=(35, None), key=dxcGroupBossKey)],
-    [sg.Text('boss连点位:0~5')],
-    [sg.Text('连点位:'), sg.InputText(dxcBossLoopRole, size=(35, None), key=dxcBossLoopRoleKey)],
 ]
 
 layout = [
