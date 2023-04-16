@@ -12,6 +12,7 @@ import win32gui
 import win32ui
 import win32con
 import win32api
+import webbrowser
 
 # Glabol
 print("path ", os.path.dirname(sys.executable))
@@ -32,10 +33,14 @@ mnqIndexKey = 'mnqDrop'
 dxcDropKey = 'dxcDrop'
 needZbNameKey = 'zbDrop'
 buyExpNumKey = 'buyExpNumDrop'
+buyDxcNumKey = 'buyDxcNumDrop'
+buyDxcRowKey = 'buyDxcRowDrop'
 dxcDropValue = ["黑白王"]
 mnqIndexDropValue = ["1", "0"]
 needZbNameValue = ['新月的悲叹', '焰帝戒指', '忘哭之冠', '深渊之弓', '愤怒法杖', '鹰神之煌剑', '狮鹫羽饰', '恶魔法杖']
 buyExpNumValue = [1, 2, 3, 4, 5, 6, 7, 8]
+buyDxcNumValue = [1, 2, 3, 4, 5, 6, 7, 8]
+buyDxcRowValue = [1, 2, 3, 4]
 
 cfg = ConfigParser()
 configPath = GetFullPath('config.ini')
@@ -112,6 +117,7 @@ isSkipDxcKey = 'isSkipDxc'
 dxcGroupDaoZhongKey = 'DxcGroupDaoZhong'
 isExpKey = 'isExp'
 isStoneKey = 'isStone'
+isDxcShopKey = 'isDxcShop'
 isNiuDanKey = 'isNiuDan'
 LeiDianDirKey = 'LeiDianDir'
 isRunAndStartKey = 'isRunAndStart'
@@ -125,6 +131,8 @@ isSendKey = 'isSend'
 isNeedSeedKey = 'isNeedSeed'
 
 isHomeTakeKey = 'isHomeTake'
+isJuQingHuoDongKey = 'isJuQingHuoDong'
+isFuKeHuoDongKey = 'isFuKeHuoDong'
 isHouDongHardKey = 'isHouDongHard'
 huoDongHardKeys = 'huoDongHard'
 isVHBossKey = 'isVHBoss'
@@ -144,6 +152,10 @@ dxcGroupDaoZhong = GetStrConfig(dxcGroupDaoZhongKey)
 isExp = GetBoolConfig(isExpKey)
 isStone = GetBoolConfig(isStoneKey)
 buyExpNum = GetStrConfig(buyExpNumKey)
+isDxcShop = GetBoolConfig(isDxcShopKey)
+buyDxcNum = GetStrConfig(buyDxcNumKey)
+buyDxcRow = GetStrConfig(buyDxcRowKey)
+
 isNiuDan = GetBoolConfig(isNiuDanKey)
 isXinSui = GetBoolConfig(isXinSuiKey)
 isXQB = GetBoolConfig(isXQBKey)
@@ -157,6 +169,8 @@ isFor64 = GetBoolConfig(isFor64Key)
 isRunAndStart = False
 
 isHomeTake = GetBoolConfig(isHomeTakeKey)
+isJuQingHuoDong = GetBoolConfig(isJuQingHuoDongKey)
+isFuKeHuoDong = GetBoolConfig(isFuKeHuoDongKey)
 isHouDongHard = GetBoolConfig(isHouDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
@@ -169,10 +183,8 @@ needZbName = GetStrConfig(needZbNameKey)
 
 # new
 DxcDuiWu = '1,2,3'
-isAllSelectKey_1 = 'isAllSelect_1'
-isAllSelectKey_2 = 'isAllSelect_2'
-isAllSelect1 = False
-isAllSelect2 = False
+isAllSelectKey = 'isAllSelect'
+isAllSelect = False
 
 
 # 保存配置
@@ -185,7 +197,10 @@ def SavaConfig(AllValues):
     SetConfigAuto(dxcGroupDaoZhongKey, AllValues)
     SetConfigAuto(isExpKey, AllValues)
     SetConfigAuto(isStoneKey, AllValues)
-    SetConfigAuto(buyExpNumKey, AllValues)
+
+    SetConfigAuto(isDxcShopKey, AllValues)
+    SetConfigAuto(buyDxcNumKey, AllValues)
+    SetConfigAuto(buyDxcRowKey, AllValues)
     SetConfigAuto(isNiuDanKey, AllValues)
     SetConfigAuto(isAutoCloseKey, AllValues)
     SetConfigAuto(isFor64Key, AllValues)  # new
@@ -201,6 +216,8 @@ def SavaConfig(AllValues):
     #SetConfigAuto(isBuyMoreExpKey, AllValues)
 
     SetConfigAuto(isHomeTakeKey, AllValues)
+    SetConfigAuto(isJuQingHuoDongKey, AllValues)
+    SetConfigAuto(isFuKeHuoDongKey, AllValues)
     SetConfigAuto(isHouDongHardKey, AllValues)
     SetConfigAuto(huoDongHardKeys, AllValues)
     SetConfigAuto(isVHBossKey, AllValues)
@@ -225,6 +242,7 @@ def ReadConfig():
     ReadBoolConfig(isDxcKey)
     ReadBoolConfig(isExpKey)
     ReadBoolConfig(isStoneKey)
+    ReadBoolConfig(isDxcShopKey)
     ReadBoolConfig(isNiuDanKey)
     ReadBoolConfig(isAutoCloseKey)
     ReadBoolConfig(isFor64Key)
@@ -235,6 +253,8 @@ def ReadConfig():
     ReadBoolConfig(isSendKey)
     ReadBoolConfig(isNeedSeedKey)
     ReadBoolConfig(isHomeTakeKey)
+    ReadBoolConfig(isJuQingHuoDongKey)
+    ReadBoolConfig(isFuKeHuoDongKey)
     ReadBoolConfig(isHouDongHardKey)
     ReadStrConfig(huoDongHardKeys)
     ReadBoolConfig(isVHBossKey)
@@ -310,8 +330,8 @@ def StartPcr():
 
 sg.theme('SystemDefaultForReal')
 sg.set_global_icon('img/other/icon.ico')
-left_col = [
-    [sg.Text('日常功能'), sg.Checkbox('', isAllSelect1, key=isAllSelectKey_1, enable_events=True)],
+main_col = [
+    [sg.Text('日常功能'), sg.Checkbox('', isAllSelect, key=isAllSelectKey, enable_events=True)],
     [
         sg.Checkbox('竞技场', isJJC, key=isJJCKey),
         sg.Checkbox('探索', isTansuo, key=isTansuoKey),
@@ -324,36 +344,61 @@ left_col = [
         sg.DropDown(buyExpNumValue, buyExpNum, key=buyExpNumKey, size=(2, None)),
     ],
     [
+        sg.Checkbox('消耗地下城币', isDxcShop, key=isDxcShopKey),
+        sg.Text('行数'),
+        sg.DropDown(buyDxcRowValue, buyDxcRow, key=buyDxcRowKey, size=(2, None)),
+        sg.Text('次数'),
+        sg.DropDown(buyDxcNumValue, buyDxcNum, key=buyDxcNumKey, size=(2, None)),
+    ],
+    [
         sg.Checkbox('扭蛋', isNiuDan, key=isNiuDanKey),
         sg.Checkbox('领取奖励', isHomeTake, key=isHomeTakeKey),
     ],
-    [sg.Text('次用功能'), sg.Checkbox('', isAllSelect2, key=isAllSelectKey_2, enable_events=True)],
     [
         sg.Checkbox('星球杯', isXQB, key=isXQBKey),
         sg.Checkbox('心之碎片', isXinSui, key=isXinSuiKey),
     ],
     [
-        sg.Checkbox('活动困难本', isHouDongHard, key=isHouDongHardKey),
+        sg.Checkbox('请求捐赠', isNeedSeed, key=isNeedSeedKey),
+        sg.DropDown(needZbNameValue, needZbName, key=needZbNameKey, size=(10, None)),
+    ],
+    [
+        sg.Checkbox('赠送礼物', isSend, key=isSendKey),
+        sg.Checkbox('点赞', isDianZan, key=isDianZanKey),
+    ],
+]
+hd_col = [
+    [
+        sg.Checkbox('剧情活动', isJuQingHuoDong, key=isJuQingHuoDongKey),
+        sg.Checkbox('复刻活动', isFuKeHuoDong, key=isFuKeHuoDongKey),
+    ],
+    [
+        sg.Checkbox('困难本', isHouDongHard, key=isHouDongHardKey),
         sg.Text('关卡'),
         sg.InputText(huoDongHard, size=(8, None), key=huoDongHardKeys),
         sg.Checkbox('VHBoss', isVHBoss, key=isVHBossKey)
     ],
-    [
-        sg.Checkbox('请求捐赠', isNeedSeed, key=isNeedSeedKey),
-        sg.Checkbox('赠送礼物', isSend, key=isSendKey),
-        sg.Checkbox('点赞', isDianZan, key=isDianZanKey),
-    ],
+]
+duli_col = [
     [
         sg.Checkbox('自动剧情', isAutoTask, text_color='green', key=isAutoTaskKey),
         sg.Checkbox('自动推图', isTuitu, text_color='green', key=isTuituKey),
         sg.Text('需要单独使用', text_color='red'),
     ],
-    [sg.Text('雷电模拟器文件夹:')],
-    [sg.InputText(LeiDianDir, size=(35, None), key=LeiDianDirKey), sg.FolderBrowse()],
-    [sg.Button('保存配置'), sg.Button(StartRunName), sg.Button(RunName), sg.Button('检查模拟器')],
 ]
-right_col = [
-    [sg.Text('其他配置')],
+left_col = [
+    [sg.Frame('日常', layout=main_col, expand_x=True)],
+    [sg.Frame('活动', layout=hd_col, expand_x=True)],
+    [sg.Frame('独立功能', layout=duli_col, expand_x=True)],
+]
+
+dxc_col = [
+    [sg.Text('地下城'), sg.DropDown(dxcDropValue, dxcBoss, key=dxcDropKey, size=(10, None)),
+     sg.Checkbox('扫荡', isSkipDxc, key=isSkipDxcKey)],
+    [sg.Text('编组-队伍 编组:1~5 队伍:1~3')],
+    [sg.Text('道中队:'), sg.InputText(dxcGroupDaoZhong, size=(35, None), key=dxcGroupDaoZhongKey)],
+]
+other_col = [
     [
         sg.Text('模拟器序号'),
         sg.DropDown(mnqIndexDropValue, mnqIndex, enable_events=True, size=(8, None), key=mnqIndexKey),
@@ -361,15 +406,26 @@ right_col = [
         sg.Checkbox('64位', isFor64, key=isFor64Key)
     ],
     [sg.Text('模拟器启动等待时间'), sg.InputText(moniqTime, size=(6, None), key=moniqTimeKey)],
-    [sg.Text('装备乞讨'), sg.DropDown(needZbNameValue, needZbName, key=needZbNameKey, size=(10, None))],
-    [sg.Text('地下城'), sg.DropDown(dxcDropValue, dxcBoss, key=dxcDropKey, size=(10, None)),
-     sg.Checkbox('扫荡', isSkipDxc, key=isSkipDxcKey)],
-    [sg.Text('编组-队伍 编组:1~5 队伍:1~3')],
-    [sg.Text('道中队:'), sg.InputText(dxcGroupDaoZhong, size=(35, None), key=dxcGroupDaoZhongKey)],
+    [sg.Text('雷电模拟器文件夹:')],
+    [sg.InputText(LeiDianDir, size=(30, None), key=LeiDianDirKey), sg.FolderBrowse()],
+    [sg.Button('保存配置'), sg.Button(StartRunName), sg.Button(RunName), sg.Button('检查模拟器')],
 ]
+menu_col = [
+    [sg.Text('项目地址', font='underline', enable_events=True, key="URL")],
+]
+right_col = [
+    [sg.Frame('地下城', layout=dxc_col, expand_x=True)],
+    [sg.Frame('模拟器配置', layout=other_col, expand_x=True, expand_y=True)],
+    [sg.Frame('关于', layout=menu_col, expand_x=True)],
+]
+
+# menu_def = [
+#     [sg.Text('下载地址', enable_events=True, key="URL")],
+# ]
 
 layout = [
     # [sg.Pane(
+    #[sg.Menu(menu_def)],
     [
         sg.Column(left_col, element_justification='l', expand_x=True, expand_y=True),
         sg.Column(right_col, element_justification='l', expand_x=True, expand_y=True)
@@ -389,23 +445,20 @@ def RunTimeValue():
     print('MainSettingKey = ', MainSettingKey)
 
 
-def SetAllSelect1():
-    window[isJJCKey].Update(isAllSelect1)
-    window[isTansuoKey].Update(isAllSelect1)
-    window[isDxcKey].Update(isAllSelect1)
-    window[isExpKey].Update(isAllSelect1)
-    window[isStoneKey].Update(isAllSelect1)
-    window[isNiuDanKey].Update(isAllSelect1)
-    window[isHomeTakeKey].Update(isAllSelect1)
-
-
-def SetAllSelect2():
-    # window[isNeedSeedKey].Update(isAllSelect2)
-    # window[isSendKey].Update(isAllSelect2)
-    # window[isHouDongHardKey].Update(isAllSelect2)
-    window[isXQBKey].Update(isAllSelect2)
-    # window[isTuituKey].Update(isAllSelect2)
-    window[isXinSuiKey].Update(isAllSelect2)
+def SetAllSelect():
+    window[isJJCKey].Update(isAllSelect)
+    window[isTansuoKey].Update(isAllSelect)
+    window[isDxcKey].Update(isAllSelect)
+    window[isExpKey].Update(isAllSelect)
+    window[isStoneKey].Update(isAllSelect)
+    window[isDxcShopKey].Update(isAllSelect)
+    window[isNiuDanKey].Update(isAllSelect)
+    window[isHomeTakeKey].Update(isAllSelect)
+    window[isXQBKey].Update(isAllSelect)
+    window[isXinSuiKey].Update(isAllSelect)
+    window[isNeedSeedKey].Update(isAllSelect)
+    window[isSendKey].Update(isAllSelect)
+    window[isDianZanKey].Update(isAllSelect)
 
 
 # def OutLog():
@@ -463,12 +516,9 @@ while True:
         else:
             print("模拟器名字或序号错误! 请求目标模拟器名为", targetName, "而正运行的模拟器名为", winName)
 
-    if event == isAllSelectKey_1:
-        isAllSelect1 = bool(1 - isAllSelect1)
-        SetAllSelect1()
-    if event == isAllSelectKey_2:
-        isAllSelect2 = bool(1 - isAllSelect2)
-        SetAllSelect2()
+    if event == isAllSelectKey:
+        isAllSelect = bool(1 - isAllSelect)
+        SetAllSelect()
 
     if event == mnqIndexKey:
         ReadConfig()
@@ -485,3 +535,5 @@ while True:
         SetConfig(isRunAndStartKey, str(event == StartRunName))
         SavaConfig(values)
         StartPcr()
+    if event == "URL":
+        webbrowser.open("https://github.com/mackerel-12138/AutoPcr")
