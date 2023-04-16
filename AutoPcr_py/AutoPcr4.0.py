@@ -877,18 +877,22 @@ def StartDxc(index=1):
     ToFightPage()
     # 进入地下城
     EnterDxc()
-    if (IsHasImg(dxcDir + "/ex.png", False)):
-        logger.info('今天打完了')
+    if not IsHasImg(dxcDir + "/quyu.png", False):
+        logger.info('地下城今日已完成')
         ToHomePage()
         return
     # 扫荡
     if isSkipDxc:
         time.sleep(1)
         if IsHasImg(dxcDir + "/skip.png"):
+            time.sleep(2)
             WaitToClickImg("img/main/sure.png")
-            time.sleep(3)
+            logger.info('地下城扫荡完成')
             ToHomePage()
             return
+
+    IsHasImg("img/main/sure.png")
+    time.sleep(2)
     if (nextDxcLevel <= 1):
         logger.info('wait box1...')
         WaitToClickImg(dxcDir + "/box1.png", False)
