@@ -128,13 +128,11 @@ isHomeTakeKey = 'isHomeTake'
 isHouDongHardKey = 'isHouDongHard'
 huoDongHardKeys = 'huoDongHard'
 isVHBossKey = 'isVHBoss'
-isUseAllPowerKey = 'isUseAllPower'
 needZbNameKey = 'needZbName'
 #isBuyMoreExpKey = 'isBuyMoreExp'
 isTuituKey = 'isTuituKey'
 isAutoTaskKey = 'isAutoTask'
 isDianZanKey = 'isDianZan'
-playerNameKey = 'playerName'
 moniqTimeKey = 'moniqTime'
 
 isJJC = GetBoolConfig(isJJCKey)
@@ -162,13 +160,11 @@ isHomeTake = GetBoolConfig(isHomeTakeKey)
 isHouDongHard = GetBoolConfig(isHouDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
-isUseAllPower = GetBoolConfig(isUseAllPowerKey)
 isDianZan = GetBoolConfig(isDianZanKey)
 
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
 moniqTime = GetStrConfigDefault(moniqTimeKey, '20')
 
-playerName = GetStrConfig(playerNameKey)
 needZbName = GetStrConfig(needZbNameKey)
 
 # new
@@ -205,14 +201,12 @@ def SavaConfig(AllValues):
     #SetConfigAuto(isBuyMoreExpKey, AllValues)
 
     SetConfigAuto(isHomeTakeKey, AllValues)
-    SetConfigAuto(isUseAllPowerKey, AllValues)
     SetConfigAuto(isHouDongHardKey, AllValues)
     SetConfigAuto(huoDongHardKeys, AllValues)
     SetConfigAuto(isVHBossKey, AllValues)
     SetConfigAuto(isDianZanKey, AllValues)
 
     SetConfigAuto(needZbNameKey, AllValues)
-    SetConfigAuto(playerNameKey, AllValues)
 
     # SetConfigAuto(LeiDianDirKey,AllValues)
     global LeiDianDir
@@ -241,7 +235,6 @@ def ReadConfig():
     ReadBoolConfig(isSendKey)
     ReadBoolConfig(isNeedSeedKey)
     ReadBoolConfig(isHomeTakeKey)
-    ReadBoolConfig(isUseAllPowerKey)
     ReadBoolConfig(isHouDongHardKey)
     ReadStrConfig(huoDongHardKeys)
     ReadBoolConfig(isVHBossKey)
@@ -253,7 +246,6 @@ def ReadConfig():
     ReadStrConfig(dxcDropKey)
     ReadStrConfig(needZbNameKey)
 
-    ReadStrConfig(playerNameKey)
     ReadStrConfig(moniqTimeKey)
     # ReadStrConfig(mnqIndexKey,AllValues)
 
@@ -351,10 +343,10 @@ left_col = [
         sg.Checkbox('赠送礼物', isSend, key=isSendKey),
         sg.Checkbox('点赞', isDianZan, key=isDianZanKey),
     ],
-    [sg.Checkbox('普通本清空体力', isUseAllPower, text_color='red', key=isUseAllPowerKey)],
     [
-        sg.Checkbox('自动剧情', isAutoTask, text_color='red', key=isAutoTaskKey),
-        sg.Checkbox('自动推图', isTuitu, text_color='red', key=isTuituKey),
+        sg.Checkbox('自动剧情', isAutoTask, text_color='green', key=isAutoTaskKey),
+        sg.Checkbox('自动推图', isTuitu, text_color='green', key=isTuituKey),
+        sg.Text('需要单独使用', text_color='red'),
     ],
     [sg.Text('雷电模拟器文件夹:')],
     [sg.InputText(LeiDianDir, size=(35, None), key=LeiDianDirKey), sg.FolderBrowse()],
@@ -369,8 +361,6 @@ right_col = [
         sg.Checkbox('64位', isFor64, key=isFor64Key)
     ],
     [sg.Text('模拟器启动等待时间'), sg.InputText(moniqTime, size=(6, None), key=moniqTimeKey)],
-    [sg.Text('玩家角色:img/main/'), sg.InputText(playerName, size=(8, None), key=playerNameKey),
-     sg.Text('.png')],
     [sg.Text('装备乞讨'), sg.DropDown(needZbNameValue, needZbName, key=needZbNameKey, size=(10, None))],
     [sg.Text('地下城'), sg.DropDown(dxcDropValue, dxcBoss, key=dxcDropKey, size=(10, None)),
      sg.Checkbox('扫荡', isSkipDxc, key=isSkipDxcKey)],
@@ -413,7 +403,6 @@ def SetAllSelect2():
     # window[isNeedSeedKey].Update(isAllSelect2)
     # window[isSendKey].Update(isAllSelect2)
     # window[isHouDongHardKey].Update(isAllSelect2)
-    window[isUseAllPowerKey].Update(isAllSelect2)
     window[isXQBKey].Update(isAllSelect2)
     # window[isTuituKey].Update(isAllSelect2)
     window[isXinSuiKey].Update(isAllSelect2)

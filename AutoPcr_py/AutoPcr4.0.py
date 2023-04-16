@@ -1283,32 +1283,6 @@ def ghHomeTake():
 tuichuMaxTry = 0
 
 
-def ClickPlayer():
-    global playerName
-    if (playerName == ""):
-        logger.info("玩家角色 为空!")
-        playerName = "player0"
-
-    while (WaitToClickImg('img/main/' + playerName + '.png', isClick=False, isRgb=True, match=0.6, maxTry=8) == NULL):
-        ExitSaoDang()
-        logger.info("No player")
-    ClickUntilNul('img/main/' + playerName + '.png', offsetY=50, maxTry=8, isRgb=True, match=0.6)
-
-
-def ClickPlayer_Or_Next():
-    global playerName
-    if (playerName == ""):
-        logger.info("玩家角色 为空!")
-        playerName = "player0"
-
-    while (WaitToClickImg('img/main/' + playerName + '.png', isClick=False, isRgb=True, match=0.6, maxTry=8) == NULL):
-        if (IsHasImg('img/main/next2.png', False)):
-            FinghtNext()
-        ExitSaoDang()
-        logger.info("No player")
-    ClickUntilNul('img/main/' + playerName + '.png', offsetY=50, maxTry=8, isRgb=True, match=0.6)
-
-
 def FinghtNext():
     WaitImgLongTime("img/main/next2.png")
     DoKeyDown(nextKey)
@@ -1323,13 +1297,14 @@ IsFirst = True
 
 
 def OnTuitu():
-
-    global IsFirst
-    if (IsFirst):
-        ClickPlayer_Or_Next()
-        IsFirst = False
+    logger.info("推图中")
+    if IsHasImg('img/main/nextg.png', False, 10):
+        logger.info("找到下一关, 战斗开始")
+        x, y = GetImgXY('img/main/nextg.png')
+        Click(x, y + 100)
     else:
-        ClickPlayer()
+        logger.info("推图完毕")
+        return
 
     if (WaitToClickImg('img/tansuo/start2.png', match=hightMatch, isRgb=True, maxTry=16, isClick=False)):
         logger.info("检测到不能扫荡 -> 新关卡")
@@ -1497,28 +1472,6 @@ def MoveToLeft():
     DoKeyDown('C')
 
 
-def UseAllPower():
-    logger.info('OnHouDongHard')
-    ToFightPage()
-    WaitToClickImg('img/main/zhuXian.png', True)
-
-    ClickPlayer()
-
-    i = 0
-    isSaodang = True
-    while (WaitToClickImg('img/tansuo/start2.png', match=hightMatch, isRgb=True, maxTry=6, isClick=False)):
-        MoveToLeft()
-        i = i + 1
-        if (i > 3):
-            isSaodang = False
-            break
-
-    if (isSaodang):
-        SaoDang(60)
-        ExitSaoDang()
-    ExitSaoDang()
-
-
 def DianZan():
     ToHangHuiPage()
     WaitToClickImg('img/other/members.png')
@@ -1567,9 +1520,6 @@ def DailyTasks():
         DianZan()
     if (isHouDongHard):
         OnHouDongHard()
-    if (isUseAllPower):
-        UseAllPower()
-        StartTakeAll()
     if (isTuitu):
         OnTuitu()
     if (isHomeTake):
@@ -1726,9 +1676,7 @@ isNeedSeedKey = 'isNeedSeed'
 isHomeTakeKey = 'isHomeTake'
 isHouDongHardKey = 'isHouDongHard'
 huoDongHardKeys = 'huoDongHard'
-isUseAllPowerKey = 'isUseAllPower'
 needZbNameKey = 'needZbName'
-playerNameKey = 'playerName'
 
 isBuyMoreExpKey = 'isBuyMoreExp'
 isDianZanKey = 'isDianZan'
@@ -1760,10 +1708,8 @@ isHomeTake = GetBoolConfig(isHomeTakeKey)
 isHouDongHard = GetBoolConfig(isHouDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
-isUseAllPower = GetBoolConfig(isUseAllPowerKey)
 isDianZan = GetBoolConfig(isDianZanKey)
 needZbName = GetStrConfig(needZbNameKey)
-playerName = GetStrConfig(playerNameKey)
 
 dxcBoss = GetStrConfig(dxcDropKey)
 dxcDir = "img/dxc"
