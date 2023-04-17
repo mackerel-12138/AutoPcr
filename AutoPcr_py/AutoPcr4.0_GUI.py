@@ -417,6 +417,7 @@ other_col = [
 ]
 menu_col = [
     [sg.Text('项目地址', font='underline', enable_events=True, key="URL")],
+    [sg.Text('计划剩余功能: 露娜塔回廊扫荡 6星碎片', font='黑体')],
 ]
 right_col = [
     [sg.Frame('地下城', layout=dxc_col, expand_x=True)],
