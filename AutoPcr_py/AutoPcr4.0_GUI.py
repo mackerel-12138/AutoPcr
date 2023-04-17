@@ -133,7 +133,7 @@ isNeedSeedKey = 'isNeedSeed'
 isHomeTakeKey = 'isHomeTake'
 isJuQingHuoDongKey = 'isJuQingHuoDong'
 isFuKeHuoDongKey = 'isFuKeHuoDong'
-isHouDongHardKey = 'isHouDongHard'
+isHuoDongHardKey = 'isHuoDongHard'
 huoDongHardKeys = 'huoDongHard'
 isVHBossKey = 'isVHBoss'
 needZbNameKey = 'needZbName'
@@ -171,7 +171,7 @@ isRunAndStart = False
 isHomeTake = GetBoolConfig(isHomeTakeKey)
 isJuQingHuoDong = GetBoolConfig(isJuQingHuoDongKey)
 isFuKeHuoDong = GetBoolConfig(isFuKeHuoDongKey)
-isHouDongHard = GetBoolConfig(isHouDongHardKey)
+isHuoDongHard = GetBoolConfig(isHuoDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
 isDianZan = GetBoolConfig(isDianZanKey)
@@ -218,7 +218,7 @@ def SavaConfig(AllValues):
     SetConfigAuto(isHomeTakeKey, AllValues)
     SetConfigAuto(isJuQingHuoDongKey, AllValues)
     SetConfigAuto(isFuKeHuoDongKey, AllValues)
-    SetConfigAuto(isHouDongHardKey, AllValues)
+    SetConfigAuto(isHuoDongHardKey, AllValues)
     SetConfigAuto(huoDongHardKeys, AllValues)
     SetConfigAuto(isVHBossKey, AllValues)
     SetConfigAuto(isDianZanKey, AllValues)
@@ -255,7 +255,7 @@ def ReadConfig():
     ReadBoolConfig(isHomeTakeKey)
     ReadBoolConfig(isJuQingHuoDongKey)
     ReadBoolConfig(isFuKeHuoDongKey)
-    ReadBoolConfig(isHouDongHardKey)
+    ReadBoolConfig(isHuoDongHardKey)
     ReadStrConfig(huoDongHardKeys)
     ReadBoolConfig(isVHBossKey)
     ReadBoolConfig(isTuituKey)
@@ -340,11 +340,11 @@ main_col = [
     [
         sg.Checkbox('购买经验', isExp, key=isExpKey),
         sg.Checkbox('购买石头', isStone, key=isStoneKey),
-        sg.Text('购买次数'),
+        sg.Text('次数'),
         sg.DropDown(buyExpNumValue, buyExpNum, key=buyExpNumKey, size=(2, None)),
     ],
     [
-        sg.Checkbox('消耗地下城币', isDxcShop, key=isDxcShopKey),
+        sg.Checkbox('地下城商店', isDxcShop, key=isDxcShopKey),
         sg.Text('行数'),
         sg.DropDown(buyDxcRowValue, buyDxcRow, key=buyDxcRowKey, size=(2, None)),
         sg.Text('次数'),
@@ -373,7 +373,7 @@ hd_col = [
         sg.Checkbox('复刻活动', isFuKeHuoDong, key=isFuKeHuoDongKey),
     ],
     [
-        sg.Checkbox('困难本', isHouDongHard, key=isHouDongHardKey),
+        sg.Checkbox('困难本', isHuoDongHard, key=isHuoDongHardKey),
         sg.Text('关卡'),
         sg.InputText(huoDongHard, size=(8, None), key=huoDongHardKeys),
         sg.Checkbox('VHBoss', isVHBoss, key=isVHBossKey)
@@ -408,7 +408,12 @@ other_col = [
     [sg.Text('模拟器启动等待时间'), sg.InputText(moniqTime, size=(6, None), key=moniqTimeKey)],
     [sg.Text('雷电模拟器文件夹:')],
     [sg.InputText(LeiDianDir, size=(30, None), key=LeiDianDirKey), sg.FolderBrowse()],
-    [sg.Button('保存配置'), sg.Button(StartRunName), sg.Button(RunName), sg.Button('检查模拟器')],
+    [
+        sg.Button('保存配置'),
+        sg.Button(StartRunName, image_filename='img/other/btn.png', font=('幼圆', 12), button_color=('white', '')),
+        sg.Button(RunName),
+        sg.Button('检查模拟器')
+    ],
 ]
 menu_col = [
     [sg.Text('项目地址', font='underline', enable_events=True, key="URL")],

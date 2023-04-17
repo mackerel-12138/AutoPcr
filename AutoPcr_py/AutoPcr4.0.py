@@ -75,6 +75,8 @@ moniqTimeKey = 'moniqTime'
 dxcDropKey = 'dxcDrop'
 mnqIndexKey = 'mnqDrop'
 buyExpNumKey = 'buyExpNumDrop'
+buyDxcNumKey = 'buyDxcNumDrop'
+buyDxcRowKey = 'buyDxcRowDrop'
 dxcDropValue = ["炸脖龙", "绿龙", "黑白王"]
 mnqIndexDropValue = ["1", "0"]
 
@@ -1096,8 +1098,8 @@ def StartNormalFight():
 
 # endregion
 def BuyExp():
-    # TODO 石头 界面选择 次数限制
-    logger.info('买经验和石头, 购买数量' + str(buyExpNum))
+    # TODO 次数限制
+    logger.info('商店-通常, 购买数量' + str(buyExpNum))
     ToHomePage()
     ToShopPage()
     WaitToClickImg('img/shop/shopTop.png', False)
@@ -1126,6 +1128,38 @@ def BuyExp():
         time.sleep(0.5)
         WaitToClickImg('img/main/sure.png')
         if i + 1 != buyExpNum:
+            WaitToClickImg('img/shop/update.png')
+            WaitToClickImg('img/main/sure.png')
+
+    ToHomePage()
+
+
+def BuyDxc():
+    logger.info('商店-地下城, 购买行数' + str(buyDxcRow) + ', 购买次数' + str(buyDxcNum))
+    ToHomePage()
+    ToShopPage()
+    WaitToClickImg('img/shop/shopTop.png', False)
+    if IsHasImg('img/shop/shopTop.png', False):
+        WaitToClickImg('img/shop/dxc.png')
+    else:
+        BuyDxc()
+
+    for i in range(buyDxcNum):
+        logger.info('购买中, 当前次数: ' + str(i + 1))
+
+        for j in range(buyDxcRow):
+            expCounter = 1
+            while expCounter <= 4 and IsHasImg('img/shop/exp.png'):
+                expCounter = expCounter + 1
+                print('IsHasImg', expCounter)
+            scroll_down(SCROLL_KEYS_1, SCROLL_200MS)
+        WaitToClickImg('img/shop/buyBtn.png')
+        WaitToClickImg('img/shop/buyTitle.png', False)
+        WaitToClickImg('img/main/sure.png')
+        time.sleep(0.5)
+        WaitToClickImg('img/main/sure.png')
+
+        if i + 1 != buyDxcNum:
             WaitToClickImg('img/shop/update.png')
             WaitToClickImg('img/main/sure.png')
 
@@ -1400,12 +1434,18 @@ def OnAutoTask():
 # def SkipDuiHua():
 
 
-def OnHouDongHard():
-    logger.info('开始剧情活动')
+def OnHuoDongHard(hd='jqhd'):
+    huoDongkey = 'img/huodong/jqhd.png'
+    if hd == 'fkhd':
+        logger.info('开始复刻活动')
+        huoDongkey = 'img/huodong/fkhd.png'
+    else:
+        logger.info('开始剧情活动')
+
     ToFightPage()
     WaitToClickImg('img/main/dxc.png', False)
     # DoKeyDown(huodongKey)
-    WaitToClickImg('img/huodong/jqhd.png')
+    WaitToClickImg(huoDongkey)
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
 
@@ -1423,7 +1463,9 @@ def OnHouDongHard():
     logger.info('刷剧情活动关卡' + huoDongHard)
     if huoDongHard:
         beats = list(huoDongHard)
-        WaitToClickImg('img/huodong/jqhd1-5.png')
+        x, y = GetImgXY('img/huodong/jqhd1-5.png')
+        Click(x, y - 50)
+        # WaitToClickImg('img/huodong/jqhd1-5.png')
         for i in range(5):
             time.sleep(1)
             if str(5 - i) not in beats:
@@ -1493,6 +1535,8 @@ def DianZan():
 def DailyTasks():
     if isExp or isStone:
         BuyExp()
+    if isDxcShop:
+        BuyDxc()
     if (isNiuDan):
         NiuDan()
     if (isTansuo):
@@ -1518,8 +1562,10 @@ def DailyTasks():
         needSeedZbStart()
     if (isDianZan):
         DianZan()
-    if (isHouDongHard):
-        OnHouDongHard()
+    if isJuQingHuoDong:
+        OnHuoDongHard('jqhd')
+    if isFuKeHuoDong:
+        OnHuoDongHard('fkhd')
     if (isTuitu):
         OnTuitu()
     if (isHomeTake):
@@ -1658,6 +1704,7 @@ isSkipDxcKey = 'isSkipDxc'
 dxcGroupDaoZhongKey = 'DxcGroupDaoZhong'
 isExpKey = 'isExp'
 isStoneKey = 'isStone'
+isDxcShopKey = 'isDxcShop'
 isNiuDanKey = 'isNiuDan'
 LeiDianDirKey = 'LeiDianDir'
 isRunAndStartKey = 'isRunAndStart'
@@ -1674,7 +1721,9 @@ isSendKey = 'isSend'
 isNeedSeedKey = 'isNeedSeed'
 
 isHomeTakeKey = 'isHomeTake'
-isHouDongHardKey = 'isHouDongHard'
+isJuQingHuoDongKey = 'isJuQingHuoDong'
+isFuKeHuoDongKey = 'isFuKeHuoDong'
+isHuoDongHardKey = 'isHuoDongHard'
 huoDongHardKeys = 'huoDongHard'
 needZbNameKey = 'needZbName'
 
@@ -1691,6 +1740,9 @@ dxcGroupDaoZhong = GetStrConfig(dxcGroupDaoZhongKey)
 isExp = GetBoolConfig(isExpKey)
 isStone = GetBoolConfig(isStoneKey)
 buyExpNum = GetIntConfig(buyExpNumKey)
+isDxcShop = GetBoolConfig(isDxcShopKey)
+buyDxcNum = GetIntConfig(buyDxcNumKey)
+buyDxcRow = GetIntConfig(buyDxcRowKey)
 isNiuDan = GetBoolConfig(isNiuDanKey)
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
 
@@ -1705,7 +1757,9 @@ isTuitu = GetBoolConfig(isTuituKey)
 isFor64 = GetBoolConfig(isFor64Key)
 isAutoTask = GetBoolConfig(isAutoTaskKey)
 isHomeTake = GetBoolConfig(isHomeTakeKey)
-isHouDongHard = GetBoolConfig(isHouDongHardKey)
+isJuQingHuoDong = GetBoolConfig(isJuQingHuoDongKey)
+isFuKeHuoDong = GetBoolConfig(isFuKeHuoDongKey)
+isHuoDongHard = GetBoolConfig(isHuoDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
 isDianZan = GetBoolConfig(isDianZanKey)
