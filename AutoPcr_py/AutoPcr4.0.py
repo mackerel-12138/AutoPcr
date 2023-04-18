@@ -1281,6 +1281,7 @@ def needSeedZbStart():
         DoKeyDown(huodongKey)
         time.sleep(1)
         if (IsHasImg('img/main/sure.png', False) == True):
+            time.sleep(1)
             logger.info("上期乞讨尚未结束")
             DoKeyDown(exitKey)
             DoKeyDown(exitKey)
@@ -1445,6 +1446,9 @@ def OnHuoDongHard(hd='jqhd'):
     ToFightPage()
     WaitToClickImg('img/main/dxc.png', False)
     # DoKeyDown(huodongKey)
+    if not IsHasImg(huoDongkey, False):
+        logger.info('选择的活动未开放')
+        return
     WaitToClickImg(huoDongkey)
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
@@ -1477,7 +1481,9 @@ def OnHuoDongHard(hd='jqhd'):
                 MoveToLeft()
                 continue
             SaoDang(2)
+        time.sleep(1)
         DoKeyDown(exitKey)
+        time.sleep(1)
     else:
         logger.info('必须输入剧情活动关卡')
 
@@ -1512,6 +1518,29 @@ def OnHuoDongHard(hd='jqhd'):
 
 def MoveToLeft():
     DoKeyDown('C')
+
+
+def OnLunaTa():
+    logger.info('露娜塔扫荡')
+    ToFightPage()
+
+    if not IsHasImg('img/huodong/lunata.png', False):
+        logger.info('露娜塔未开放')
+        return
+    WaitToClickImg('img/huodong/lunata.png')
+    time.sleep(2)
+    if not IsHasImg('img/huodong/hlcheck.png', False) and not IsHasImg('img/huodong/saodang1.png', False):
+        logger.info('露娜塔回廊未通关')
+        return
+    for i in range(6):
+        DoKeyDown(listSelectKeys[2])
+    WaitToClickImg("img/huodong/saodang5.png")
+    WaitToClickImg("img/main/sure.png")
+    WaitToClickImg("img/main/skip.png")
+    time.sleep(1)
+    DoKeyDown(exitKey)
+
+    ToHomePage()
 
 
 def DianZan():
@@ -1566,6 +1595,8 @@ def DailyTasks():
         OnHuoDongHard('jqhd')
     if isFuKeHuoDong:
         OnHuoDongHard('fkhd')
+    if (isLunaTa):
+        OnLunaTa()
     if (isTuitu):
         OnTuitu()
     if (isHomeTake):
@@ -1725,6 +1756,7 @@ isJuQingHuoDongKey = 'isJuQingHuoDong'
 isFuKeHuoDongKey = 'isFuKeHuoDong'
 isHuoDongHardKey = 'isHuoDongHard'
 huoDongHardKeys = 'huoDongHard'
+isLunaTaKey = 'isLunaTa'
 needZbNameKey = 'needZbName'
 
 isBuyMoreExpKey = 'isBuyMoreExp'
@@ -1762,6 +1794,7 @@ isFuKeHuoDong = GetBoolConfig(isFuKeHuoDongKey)
 isHuoDongHard = GetBoolConfig(isHuoDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
+isLunaTa = GetBoolConfig(isLunaTaKey)
 isDianZan = GetBoolConfig(isDianZanKey)
 needZbName = GetStrConfig(needZbNameKey)
 

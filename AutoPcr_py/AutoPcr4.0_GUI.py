@@ -136,6 +136,7 @@ isFuKeHuoDongKey = 'isFuKeHuoDong'
 isHuoDongHardKey = 'isHuoDongHard'
 huoDongHardKeys = 'huoDongHard'
 isVHBossKey = 'isVHBoss'
+isLunaTaKey = 'isLunaTa'
 needZbNameKey = 'needZbName'
 #isBuyMoreExpKey = 'isBuyMoreExp'
 isTuituKey = 'isTuituKey'
@@ -174,6 +175,7 @@ isFuKeHuoDong = GetBoolConfig(isFuKeHuoDongKey)
 isHuoDongHard = GetBoolConfig(isHuoDongHardKey)
 huoDongHard = GetStrConfig(huoDongHardKeys)
 isVHBoss = GetBoolConfig(isVHBossKey)
+isLunaTa = GetBoolConfig(isLunaTaKey)
 isDianZan = GetBoolConfig(isDianZanKey)
 
 LeiDianDir = cfg.get('MainSetting', LeiDianDirKey)
@@ -221,6 +223,7 @@ def SavaConfig(AllValues):
     SetConfigAuto(isHuoDongHardKey, AllValues)
     SetConfigAuto(huoDongHardKeys, AllValues)
     SetConfigAuto(isVHBossKey, AllValues)
+    SetConfigAuto(isLunaTaKey, AllValues)
     SetConfigAuto(isDianZanKey, AllValues)
 
     SetConfigAuto(needZbNameKey, AllValues)
@@ -258,6 +261,7 @@ def ReadConfig():
     ReadBoolConfig(isHuoDongHardKey)
     ReadStrConfig(huoDongHardKeys)
     ReadBoolConfig(isVHBossKey)
+    ReadBoolConfig(isLunaTaKey)
     ReadBoolConfig(isTuituKey)
     ReadBoolConfig(isAutoTaskKey)
     #ReadBoolConfig(isBuyMoreExpKey)
@@ -378,6 +382,9 @@ hd_col = [
         sg.InputText(huoDongHard, size=(8, None), key=huoDongHardKeys),
         sg.Checkbox('VHBoss', isVHBoss, key=isVHBossKey)
     ],
+    [
+        sg.Checkbox('露娜塔回廊扫荡', isLunaTa, key=isLunaTaKey),
+    ],
 ]
 duli_col = [
     [
@@ -417,7 +424,7 @@ other_col = [
 ]
 menu_col = [
     [sg.Text('项目地址', font='underline', enable_events=True, key="URL")],
-    [sg.Text('计划剩余功能: 露娜塔回廊扫荡 6星碎片', font='黑体')],
+    [sg.Text('计划剩余功能: 6星碎片', font='黑体')],
 ]
 right_col = [
     [sg.Frame('地下城', layout=dxc_col, expand_x=True)],
