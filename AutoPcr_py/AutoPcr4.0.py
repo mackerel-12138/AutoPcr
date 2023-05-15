@@ -98,8 +98,8 @@ MainSettingKey = 'MainSetting_' + str(mnqIndex)
 window_title = None
 MainhWnd = 0
 Subhwnd = None
-width = 960
-height = 540
+width = 1280
+height = 720
 Scale = 1
 saveDC = None
 mfcDC = None
@@ -372,8 +372,8 @@ def Click(x=None, y=None):
             lastX = x
             lastY = y
 
-        tx = int(x * trueW / 960)
-        ty = int(y * trueH / 540)
+        tx = int(x * trueW / 1280)
+        ty = int(y * trueH / 720)
         # logger.info(trueH,trueW,"simPos:",x,y,"truePos:",tx,ty)
         positon = win32api.MAKELONG(int(tx), int(ty))
         win32api.SendMessage(Subhwnd, win32con.WM_LBUTTONDOWN, win32con.MK_LBUTTON, positon)
@@ -449,8 +449,8 @@ def GetImgXY(targetImg, match=minMatch, isRgb=False):
             lastX = x
             lastY = y
 
-        tx = int(x * trueW / 960)
-        ty = int(y * trueH / 540)
+        tx = int(x * trueW / 1280)
+        ty = int(y * trueH / 720)
         return tx, ty
     else:
         return 0, 0
@@ -484,7 +484,7 @@ def WaitToClickImg(targetImg, isClick=True, isSkip=True, maxTry=12, autoExit=Fal
         waitTime = 0
 
         if (isClick):
-            y1 = y1 + (offsetY * trueH / 540)
+            y1 = y1 + (offsetY * trueH / 720)
             time.sleep(0.1)
             logger.info("Click >> " + targetImg)
             Click(x1, y1)
@@ -1336,7 +1336,7 @@ def OnTuitu():
     if IsHasImg('img/main/nextg.png', False, 10):
         logger.info("找到下一关, 战斗开始")
         x, y = GetImgXY('img/main/nextg.png')
-        Click(x, y + 100)
+        Click(x, y + 150)
     else:
         logger.info("推图完毕")
         return
@@ -1820,8 +1820,8 @@ def testWin(x, y):
     ret2 = win32gui.GetClientRect(Subhwnd)
     height = ret[3] - ret[1]
     width = ret[2] - ret[0]
-    tx = int(x * width / 960)
-    ty = int(y * height / 540)
+    tx = int(x * width / 1280)
+    ty = int(y * height / 720)
     logger.info(str(ret) + ' ' + str(ret2))
     logger.info(str(height) + str(width) + " oldPos:" + x + y + " truePos:" + str(tx) + str(ty))
 
