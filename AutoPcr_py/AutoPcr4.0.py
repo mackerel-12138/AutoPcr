@@ -684,7 +684,7 @@ def ToFightPage():
 
 
 def ToHomePage():
-    while not IsHasImg("img/main/tuichu.png", False):
+    while not IsHasImg("img/window/quit.png", False):
         logger.info('回到主页')
         DoKeyDown(endKey)
     DoKeyDown(exitKey)
@@ -702,9 +702,9 @@ def ToHomePage():
 
 def ToHangHuiPage():
     ToHomePage()
-    WaitToClickImg('img/other/hanghui.png')
+    WaitToClickImg('img/main/hanghui.png')
     time.sleep(2)
-    if (IsHasImg("img/other/members.png") == False):
+    if (IsHasImg("img/hanghui/members.png") == False):
         DoKeyDown(exitKey)
         DoKeyDown(exitKey)
         logger.info('重新进入行会')
@@ -714,7 +714,7 @@ def ToHangHuiPage():
 
 
 def ToShopPage():
-    WaitToClickImg("img/shop/shop1.png", True, True, 5)
+    WaitToClickImg("img/main/shop.png", True, True, 5)
     time.sleep(1)
 
 
@@ -762,7 +762,7 @@ def StartJJC():
         WaitToClickImg('img/jjc/skip.png', maxTry=25)
     Click()
     time.sleep(2)
-    LongTimeCheck("img/dxc/win.png", "img/jjc/lose.png")
+    LongTimeCheck("img/other/win.png", "img/jjc/lose.png")
     time.sleep(1.5)
     DoKeyDown(nextKey)
     time.sleep(1.5)
@@ -813,7 +813,7 @@ def StartTanSuo():
     logger.info("===探索===")
     ToFightPage()
     time.sleep(0.5)
-    WaitToClickImg("img/tansuo/tansuo.png")
+    WaitToClickImg("img/main/tansuo.png")
     time.sleep(0.5)
     WaitToClickImg("img/tansuo/mana.png")
     WaitToClickImg("img/tansuo/topMana.png", False)
@@ -822,7 +822,7 @@ def StartTanSuo():
         DoKeyDown(listSelectKeys[0])
     time.sleep(0.5)
     WaitToClickImg("img/tansuo/start.png")
-    WaitToClickImg("img/main/sure.png")
+    WaitToClickImg("img/button/sure.png")
     WaitToClickImg("img/tansuo/return.png")
     time.sleep(0.5)
     DoKeyDown(exitKey)
@@ -832,7 +832,7 @@ def StartTanSuo():
     if (IsHasImg("img/tansuo/topExp.png", False) == False):
         ToFightPage()
         time.sleep(0.5)
-        WaitToClickImg("img/tansuo/tansuo.png")
+        WaitToClickImg("img/main/tansuo.png")
         time.sleep(0.5)
         WaitToClickImg("img/tansuo/exp.png")
 
@@ -842,27 +842,28 @@ def StartTanSuo():
         DoKeyDown(listSelectKeys[0])
     time.sleep(0.5)
     WaitToClickImg("img/tansuo/start.png")
-    WaitToClickImg("img/main/sure.png")
+    WaitToClickImg("img/button/sure.png")
     WaitToClickImg("img/tansuo/return.png")
     time.sleep(0.5)
     DoKeyDown(exitKey)
     DoKeyDown(exitKey)
     time.sleep(1.5)
+    ToHomePage()
 
 
 def StartTakeAll():
     time.sleep(2)
     ToHomePage()
     WaitToClickImg("img/task/task.png")
-    WaitToClickImg("img/task/takeAll.png")
-    WaitToClickImg("img/task/close.png")
+    WaitToClickImg("img/button/takeAll.png")
+    WaitToClickImg("img/button/close.png")
 
 
 def TakeGift():
     ToHomePage()
     WaitToClickImg("img/task/gift.png")
-    WaitToClickImg("img/task/takeAll.png")
-    WaitToClickImg("img/task/sure.png", match=hightMatch)
+    WaitToClickImg("img/button/takeAll.png")
+    WaitToClickImg("img/button/sure.png", match=hightMatch)
     ExitSaoDang()
     ToHomePage()
 
@@ -879,21 +880,21 @@ def StartDxc(index=1):
     ToFightPage()
     # 进入地下城
     EnterDxc()
-    if not IsHasImg(dxcDir + "/quyu.png", False):
+    if not IsHasImg("img/window/quyu.png", False):
         logger.info('地下城今日已完成')
         ToHomePage()
         return
     # 扫荡
     if isSkipDxc:
         time.sleep(1)
-        if IsHasImg(dxcDir + "/skip.png"):
+        if IsHasImg("img/button/skip.png"):
             time.sleep(2)
-            WaitToClickImg("img/main/sure.png")
+            WaitToClickImg("img/button/sure.png")
             logger.info('地下城扫荡完成')
             ToHomePage()
             return
 
-    IsHasImg("img/main/sure.png")
+    IsHasImg("img/button/sure.png")
     time.sleep(2)
     if (nextDxcLevel <= 1):
         logger.info('wait box1...')
@@ -933,7 +934,7 @@ def EnterDxc():
     scroll_right(SCROLL_KEYS_1, SCROLL_400MS)
     WaitToClickImg(dxcDir + "/ex.png")
     time.sleep(1)
-    # IsHasImg("img/main/sure.png")
+    # IsHasImg("img/button/sure.png")
     # time.sleep(2)
 
 
@@ -995,7 +996,7 @@ def DxcBoxFight(level):
 
 def DxcBoxFightWait():
     time.sleep(2.5)
-    WaitImgLongTime(dxcDir + "/win.png")
+    WaitImgLongTime("img/other/win.png")
     time.sleep(2)
     DoKeyDown(nextKey)  # 返回
     DoKeyDown(nextKey)  # 返回
@@ -1124,12 +1125,12 @@ def BuyExp():
 
         WaitToClickImg('img/shop/buyBtn.png')
         WaitToClickImg('img/shop/buyTitle.png', False)
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/button/sure.png')
         time.sleep(0.5)
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/button/sure.png')
         if i + 1 != buyExpNum:
             WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
+            WaitToClickImg('img/button/sure.png')
 
     ToHomePage()
 
@@ -1155,13 +1156,13 @@ def BuyDxc():
             scroll_down(SCROLL_KEYS_1, SCROLL_200MS)
         WaitToClickImg('img/shop/buyBtn.png')
         WaitToClickImg('img/shop/buyTitle.png', False)
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/button/sure.png')
         time.sleep(0.5)
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/button/sure.png')
 
         if i + 1 != buyDxcNum:
             WaitToClickImg('img/shop/update.png')
-            WaitToClickImg('img/main/sure.png')
+            WaitToClickImg('img/button/sure.png')
 
     ToHomePage()
 
@@ -1176,7 +1177,7 @@ def NiuDan():
     DoKeyDown(partyKey)
 
     if (IsHasImg('img/other/niu1.png')):
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/button/sure.png')
     ToHomePage()
 
 
@@ -1192,12 +1193,12 @@ def SaoDang(_time=4):
         Click()
 
     WaitToClickImg('img/tansuo/start.png')
-    if (IsHasImg('img/main/huifu.png', False)):
+    if (IsHasImg('img/window/huifu.png', False)):
         DoKeyDown(exitKey)
         DoKeyDown(exitKey)
         return
-    WaitToClickImg("img/main/sure.png")
-    WaitToClickImg("img/main/skip.png")
+    WaitToClickImg("img/button/sure.png")
+    WaitToClickImg("img/button/skipdone.png")
     DoKeyDown(exitKey)
     time.sleep(1)
 
@@ -1208,9 +1209,9 @@ def ExitSaoDang():
 
 
 def Xqb():
-    if (WaitToClickImg('img/tansuo/xqbEnter.png') == False):
+    if (WaitToClickImg('img/tansuo/xqb.png') == False):
         ExitSaoDang()
-        WaitToClickImg('img/tansuo/xqbEnter.png')
+        WaitToClickImg('img/tansuo/xqb.png')
 
     for i in range(2):
         time.sleep(0.5)
@@ -1223,9 +1224,9 @@ def Xqb():
 
 
 def xinSui():
-    if (WaitToClickImg('img/tansuo/xinSuiEnter.png') == False):
+    if (WaitToClickImg('img/tansuo/xinsui.png') == False):
         ExitSaoDang()
-        WaitToClickImg('img/tansuo/xinSuiEnter.png')
+        WaitToClickImg('img/tansuo/xinsui.png')
 
     for i in range(3):
         time.sleep(0.5)
@@ -1240,21 +1241,21 @@ def xinSui():
 
 def SendZb():
     ToHomePage()
-    WaitToClickImg('img/other/hanghui.png')
+    WaitToClickImg('img/main/hanghui.png')
     time.sleep(0.4)
-    WaitToClickImg('img/other/hhDown.png')
+    WaitToClickImg('img/hanghui/hhDown.png')
     time.sleep(0.2)
     for i in range(2):
-        if (WaitToClickImg('img/other/sendBtn.png', True, match=0.93, isRgb=True)):
-            WaitToClickImg('img/other/sendMax.png', True, True, 7, False, 0.85)
-            WaitToClickImg('img/main/sure.png')
+        if (WaitToClickImg('img/hanghui/sendBtn.png', True, match=0.93, isRgb=True)):
+            WaitToClickImg('img/hanghui/sendMax.png', True, True, 7, False, 0.85)
+            WaitToClickImg('img/button/sure.png')
             time.sleep(0.2)
             DoKeyDown(exitKey)
             DoKeyDown(exitKey)
 
 
 def GetZBPath(name):
-    return os.path.join('img\\other\\zhuangbei\\', str(name) + '.png')
+    return os.path.join('img\\hanghui\\zhuangbei\\', str(name) + '.png')
 
 
 isRetryNeedZb = False
@@ -1265,22 +1266,22 @@ def needSeedZbStart():
     logger.info('装备乞讨任务')
     if (isRetryNeedZb == False):
         ToHomePage()
-        WaitToClickImg('img/other/hanghui.png')
+        WaitToClickImg('img/main/hanghui.png')
     time.sleep(2)
     # WaitToClickImg('img/other/needSend.png')
     DoKeyDown(huodongKey)
     time.sleep(2)
 
-    if (IsHasImg('img/other/needSend2.png', False) == True):
+    if (IsHasImg('img/hanghui/needSend2.png', False) == True):
         needSeedZb()
     else:
         logger.info("确认上期乞讨")
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/button/sure.png')
         time.sleep(1)
         # WaitToClickImg('img/other/needSend.png')
         DoKeyDown(huodongKey)
         time.sleep(1)
-        if (IsHasImg('img/main/sure.png', False) == True):
+        if (IsHasImg('img/button/sure.png', False) == True):
             time.sleep(1)
             logger.info("上期乞讨尚未结束")
             DoKeyDown(exitKey)
@@ -1298,9 +1299,9 @@ def needSeedZb():
         DoKeyDown(partyKey)
         time.sleep(1)
     if (WaitToClickImg(GetZBPath(zbmap[needZbName]), maxTry=5, match=0.7)):
-        WaitToClickImg('img/other/needSend2.png')
-        WaitToClickImg('img/main/sure.png')
-        WaitToClickImg('img/main/sure.png')
+        WaitToClickImg('img/hanghui/needSend2.png')
+        WaitToClickImg('img/button/sure.png')
+        WaitToClickImg('img/button/sure.png')
     else:
         DoKeyDown(exitKey)
         DoKeyDown(exitKey)
@@ -1309,9 +1310,9 @@ def needSeedZb():
 def ghHomeTake():
     WaitToClickImg('img/main/ghHome.png')
     time.sleep(1)
-    WaitToClickImg('img/main/ghHome_take.png')
+    WaitToClickImg('img/other/ghHome_take.png')
     DoKeyDown(exitKey)
-    WaitToClickImg('img/task/close.png')
+    WaitToClickImg('img/button/close.png')
     DoKeyDown(exitKey)
 
 
@@ -1319,13 +1320,13 @@ tuichuMaxTry = 0
 
 
 def FinghtNext():
-    WaitImgLongTime("img/main/next2.png")
+    WaitImgLongTime("img/button/next2.png")
     DoKeyDown(nextKey)
     DoKeyDown(nextKey)
     time.sleep(2)
-    if (WaitToClickImg("img/main/next2.png") == False):
+    if (WaitToClickImg("img/button/next2.png") == False):
         ExitSaoDang()
-        WaitToClickImg("img/main/next2.png")
+        WaitToClickImg("img/button/next2.png")
 
 
 IsFirst = True
@@ -1354,14 +1355,14 @@ def OnTuitu():
 
         logger.info("sleep 10")
         time.sleep(10)
-        WaitImgLongTime("img/main/next2.png")
+        WaitImgLongTime("img/button/next2.png")
 
         DoKeyDown(nextKey)
         DoKeyDown(nextKey)
         time.sleep(2)
-        if (WaitToClickImg("img/main/next2.png") == False):
+        if (WaitToClickImg("img/button/next2.png") == False):
             ExitSaoDang()
-            WaitToClickImg("img/main/next2.png")
+            WaitToClickImg("img/button/next2.png")
         DoKeyDown(nextKey)
         OnTuitu()
     else:
@@ -1408,7 +1409,7 @@ def OnAutoTask():
     # 没有菜单
     if ((1 - hasMenu) or (IsHasImg('img/task/menu.png', isClick=False) == False)):
         # 需要区分是视频还是 主页
-        if (IsHasImg('img/task/close.png', stopTime=6) == False and IsHasImg('img/task/noSound.png') == False):
+        if (IsHasImg('img/button/close.png', stopTime=6) == False and IsHasImg('img/task/noSound.png') == False):
             DoKeyDown(exitKey)
             time.sleep(0.6)
             menuNofindTime = menuNofindTime + 1
@@ -1507,11 +1508,11 @@ def OnHuoDongHard(hd='jqhd'):
         time.sleep(2)
         DoKeyDown(huoDongJiangLiKeys[0])
         WaitToClickImg("img/task/takeAll.png")
-        WaitToClickImg("img/task/close.png")
+        WaitToClickImg("img/button/close.png")
         DoKeyDown(exitKey)
         DoKeyDown(huoDongJiangLiKeys[1])
         WaitToClickImg("img/task/takeAll.png")
-        WaitToClickImg("img/task/close.png")
+        WaitToClickImg("img/button/close.png")
         DoKeyDown(exitKey)
     ToHomePage()
 
@@ -1535,8 +1536,8 @@ def OnLunaTa():
     for i in range(6):
         DoKeyDown(listSelectKeys[2])
     WaitToClickImg("img/huodong/saodang5.png")
-    WaitToClickImg("img/main/sure.png")
-    WaitToClickImg("img/main/skip.png")
+    WaitToClickImg("img/button/sure.png")
+    WaitToClickImg("img/button/skipdone.png")
     time.sleep(1)
     DoKeyDown(exitKey)
 
@@ -1545,16 +1546,16 @@ def OnLunaTa():
 
 def DianZan():
     ToHangHuiPage()
-    WaitToClickImg('img/other/members.png')
+    WaitToClickImg('img/hanghui/members.png')
     time.sleep(2)
 
     logger.info("开始点赞任务")
-    if (IsHasImg('img/other/dianzan.png', False) == False):
+    if (IsHasImg('img/hanghui/dianzan.png', False) == False):
         logger.info("已经点过赞了")
     else:
         # TODO 选人
         logger.info("开始点赞")
-        WaitToClickImg('img/other/dianzan.png')
+        WaitToClickImg('img/hanghui/dianzan.png')
         time.sleep(2)
     logger.info("点赞完成")
     ToHomePage()
@@ -1641,7 +1642,7 @@ def WaitStart():
         DoKeyDown(exitKey)
         time.sleep(3)
         # 更新
-        if (IsHasImg("img/main/sure.png", True)):
+        if (IsHasImg("img/button/sure.png", True)):
             Click()
             time.sleep(10)
             logger.info('=== Update sleep 10 ===')
@@ -1653,7 +1654,7 @@ def WaitStart():
 
         if (IsHasImg("img/task/menu.png", True)):
             if (IsHasImg("img/task/skip.png", True)):
-                WaitToClickImg("img/main/sure.png", True)
+                WaitToClickImg("img/button/sure.png", True)
             else:
                 if (IsHasImg("img/task/menu_black.png", False, isRgb=True)):
                     ClickCenter()
