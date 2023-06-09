@@ -1397,7 +1397,7 @@ def OnAutoTask():
         # IsHasImg('img/task/menu.png')
         if (IsHasImg('img/task/skip.png')):
             # 蓝色按钮
-            WaitToClickImg('img/task/skipBtn.png')
+            WaitToClickImg('img/button/skip_.png')
         else:
             # 出现选项时
             if (IsHasImg("img/task/menu_black.png", False, isRgb=True)):
@@ -1414,13 +1414,13 @@ def OnAutoTask():
             time.sleep(0.6)
             menuNofindTime = menuNofindTime + 1
 
-        IsHasImg('img/task/skipBtn.png')
+        IsHasImg('img/button/skip_.png')
         IsHasImg('img/task/noSound.png')
     else:
         menuNofindTime = 0
 
     if (menuNofindTime > 1):
-        if ((1 - IsHasImg('img/task/skipBtn.png'))):
+        if ((1 - IsHasImg('img/button/skip_.png'))):
             if (IsHasImg("img/main/fight.png", False)):
                 logger.info("任务结束")
                 return
